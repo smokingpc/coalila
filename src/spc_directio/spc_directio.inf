@@ -1,0 +1,49 @@
+;
+; spc_directio.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider=%ManufacturerName%
+DriverVer=
+CatalogFile=spc_directio.cat
+PnpLockDown=1
+
+;This template is supported for OS version 17763 (Windows 10 version 1809) and after.
+;For Windows OS prior to Windows 10 1809 set DefaultDestDir = 12
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+spc_directio.sys = 1,,
+
+[Manufacturer]
+%ManufacturerName%=DefaultInstall,NT$ARCH$
+
+[DefaultInstall.NT$ARCH$]
+CopyFiles=DefaultInstall_CopyFiles
+
+[DefaultInstall_CopyFiles]
+spc_directio.sys
+
+[DefaultInstall.NT$ARCH$.Services]
+AddService = spc_directio, 2, SpcDirectIo_Service
+
+; -------------- driver install sections
+[SpcDirectIo_Service]
+DisplayName    = %MyDeviceDesc%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\spc_directio.sys
+
+[Strings]
+ManufacturerName="Roy Wang (SmokingPC)"
+ClassName=""
+DiskName="spc_directio Source Disk"
+MyDeviceDesc = "PCI Bus DirectIo Device"
