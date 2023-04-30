@@ -22,8 +22,8 @@ DefaultDestDir = 13
 [SourceDisksFiles]
 spc_directio.sys = 1,,
 
-[Manufacturer]
-%ManufacturerName%=DefaultInstall,NT$ARCH$
+;[Manufacturer]
+;%ManufacturerName%=DefaultInstall,NT$ARCH$
 
 [DefaultInstall.NT$ARCH$]
 CopyFiles=DefaultInstall_CopyFiles
@@ -32,10 +32,10 @@ CopyFiles=DefaultInstall_CopyFiles
 spc_directio.sys
 
 [DefaultInstall.NT$ARCH$.Services]
-AddService = spc_directio, 2, SpcDirectIo_Service
+AddService = spc_directio, 2, SpcDirectIo_AddService
 
 ; -------------- driver install sections
-[SpcDirectIo_Service]
+[SpcDirectIo_AddService]
 DisplayName    = %MyDeviceDesc%
 ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
 StartType      = 3               ; SERVICE_DEMAND_START
