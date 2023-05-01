@@ -301,7 +301,7 @@
     <ClCompile Include="DirectIo.cpp" />
     <ClCompile Include="DriverEntry.cpp" />
     <ClCompile Include="IrpHandlers.cpp" />
-    <ClCompile Include="PciDev.cpp" />
+    <ClCompile Include="PciDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ACPI_Functions.h" />
@@ -310,7 +310,8 @@
     <ClInclude Include="DeviceExtension.h" />
     <ClInclude Include="DirectIo.h" />
     <ClInclude Include="IoctlCmd.h" />
-    <ClInclude Include="PciDev.h" />
+    <ClInclude Include="PciDevice.h" />
+    <ClInclude Include="PCI_PCIe_Caps.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="IrpHandlers.h" />
   </ItemGroup>

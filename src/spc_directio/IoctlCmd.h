@@ -9,7 +9,7 @@
 
 //return PCIe VENID and DEVID array
 #define DIO_SCAN_PCIDEV     (120)
-//read specified CAPABILITY block which followed after PCIDEV_CONFIG_HEADER
+//read specified CAPABILITY block which followed after PCIDEV_CONFIG_SPACE
 #define DIO_READ_CAP        (121)
 #define DIO_PCIE_SLOT_CTRL  (140)   
 
@@ -35,6 +35,7 @@ enum class IO_SIZE {
     UINT64 = sizeof(UINT64)
 };
 
+//PCI Capability ID => refer to PCI Local Bus spec 3.0
 enum class PCICAP_ID {
     RESERVED = 0,
     PCI_POWER_MGR = 1,
@@ -53,7 +54,10 @@ enum class PCICAP_ID {
     AGP_8X = 0x0E,
     SECURE_DEVICE = 0x0F,
     PCIE = 0x10,
-    MSIX = 0x11
+    MSIX = 0x11,
+    SATA_CONFIG = 0x12,
+    ADV_FEATURE = 0x13,
+    FPB = 0x15,
 };
 
 //for IOCTL_READPORT
@@ -71,6 +75,16 @@ typedef struct {
 
 //for IOCTL_READ_CAP
 typedef struct {
+    USHORT Segment; //0~65535, UEFI defined segment. it is called "Domain" in Linux.
+    UCHAR BusId;    //0~255
+    UCHAR DevId;    //0~32
+    UCHAR FuncId;   //0~7
+    PCICAP_ID CapID;
+}READ_PCI_CAP;
+
+
+#if 0
+typedef struct {
     union {
         struct {
             USHORT VendorId;
@@ -86,6 +100,7 @@ typedef struct {
     };
     PCICAP_ID CapID;
 }READ_PCI_CAP;
+#endif
 
 
 #pragma region ======== PCI DEVICE CONFIG and CAPABILITY structures ========
@@ -151,7 +166,7 @@ typedef struct {
         //Cardbus is almost extinct. So I skip type2 definition...
     } DUMMYSTRUCTNAME;
     UCHAR   Device[192];
-}PCIDEV_CONFIG_HEADER, * PPCIDEV_CONFIG_HEADER;
+}PCIDEV_CONFIG_SPACE, * PPCIDEV_CONFIG_SPACE;
 #pragma pack()
 
 #pragma endregion ======== PCI DEVICE CONFIG and CAPABILITY structures ========

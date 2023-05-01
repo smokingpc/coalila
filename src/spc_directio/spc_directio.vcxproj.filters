@@ -36,7 +36,7 @@
     <ClCompile Include="DirectIo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PciDev.cpp">
+    <ClCompile Include="PciDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DeviceExtension.cpp">
@@ -62,13 +62,16 @@
     <ClInclude Include="DirectIo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PciDev.h">
+    <ClInclude Include="PciDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DeviceExtension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ACPI_Structures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCI_PCIe_Caps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
