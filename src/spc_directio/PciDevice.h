@@ -8,6 +8,7 @@ typedef union _ECAM_OFFSET {
         UINT32 Func : 3;
         UINT32 Dev : 5;
         UINT32 Bus : 8;
+        UINT32 NotUsed : 4;
     } u;
     UINT32 AsAddr;
 } ECAM_OFFSET, * PECAM_OFFSET;

@@ -1,8 +1,14 @@
 #pragma once
 #pragma pack(1)
+
+typedef struct _PCI_CAP_HEADER {
+    UCHAR   CapabilityID;
+    UCHAR   Next;
+} PCI_CAP_HEADER, * PPCI_CAP_HEADER;
+
 typedef struct _PCI_MSI_CAP
 {
-    PCI_CAPABILITIES_HEADER Header;
+    PCI_CAP_HEADER Header;
     struct {
         UINT16 MSIE : 1;        //MSI Enable. device will use INTx pins if set 0 here.
         UINT16 MMC : 3;         //Multiple Message Capable. Indicates the number of messages the controller "wants" to assert.
@@ -31,7 +37,7 @@ typedef struct _PCI_MSI_CAP
 }PCI_MSI_CAP, * PPCI_MSI_CAP;
 
 typedef struct _PCI_MSIX_CAP {
-    PCI_CAPABILITIES_HEADER Header;
+    PCI_CAP_HEADER Header;
     struct {
         UINT16 TS : 11;         //Table Size. how many MSI-X message this device support?
         UINT16 RESERVED : 3;
@@ -245,7 +251,7 @@ typedef struct {
 
 typedef struct 
 {
-    PCI_CAPABILITIES_HEADER Header;
+    PCI_CAP_HEADER Header;
     PCIE_CAPABILITY_REG PCIeCap;
     PCIE_DEVICE_CAPABILITY DevCap;
     PCIE_DEVICE_CONTROL DevCtrl;

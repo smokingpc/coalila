@@ -1,6 +1,12 @@
 #pragma once
 
-#define DEVICE_NAME  (L"\\Device\\SPC_DIRECTIO")
-#define SYMLINK_NAME  (L"\\DosDevices\\SPC_DIRECTIO")
+#define SPCDIO_NAME  L"SPC_DIRECTIO"
+#define PREFIX_DEVICE L"\\Device\\"
+#define PREFIX_DOS_DEVICE L"\\DosDevices\\"
+//#define CONCAT_STR(prefix,name) prefix##name
+//#define DEVICE_NAME  CONCAT_STR(PREFIX_DEVICE,SPCDIO_NAME)
+#define DEVICE_NAME PREFIX_DEVICE SPCDIO_NAME
+#define SYMLINK_NAME PREFIX_DOS_DEVICE SPCDIO_NAME
+//#define SYMLINK_NAME L"\\DosDevices\\" SPCDIO_NAME
 
 #define ECAM_SEGMENT_SIZE   (256 * 32 * 8 * PAGE_SIZE)  //256MB

@@ -271,6 +271,10 @@
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -305,15 +309,15 @@
     <ClCompile Include="PciDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\IoctlCmd.h" />
+    <ClInclude Include="..\common\PCI_PCIe_Caps.h" />
     <ClInclude Include="ACPI_Functions.h" />
     <ClInclude Include="ACPI_Structures.h" />
     <ClInclude Include="AutoLock.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="DeviceExtension.h" />
     <ClInclude Include="DirectIo.h" />
-    <ClInclude Include="IoctlCmd.h" />
     <ClInclude Include="PciDevice.h" />
-    <ClInclude Include="PCI_PCIe_Caps.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="IrpHandlers.h" />
   </ItemGroup>

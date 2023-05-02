@@ -59,9 +59,6 @@
     <ClInclude Include="Constant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IoctlCmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DirectIo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -74,10 +71,13 @@
     <ClInclude Include="ACPI_Structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PCI_PCIe_Caps.h">
+    <ClInclude Include="AutoLock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AutoLock.h">
+    <ClInclude Include="..\common\IoctlCmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCI_PCIe_Caps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

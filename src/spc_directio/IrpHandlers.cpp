@@ -56,10 +56,10 @@ NTSTATUS DeviceIoControlHandler(
     case IOCTL_WRITE_PORT:
         status = DirectWriteIoPort(buffer, in_size, out_size, ret_info);
         break;
-    case IOCTL_READ_REG:
+    case IOCTL_READ_ADDR:
         status = DirectReadRegister(buffer, in_size, out_size, ret_info);
         break;
-    case IOCTL_WRITE_REG:
+    case IOCTL_WRITE_ADDR:
         status = DirectWriteRegister(buffer, in_size, out_size, ret_info);
         break;
     case IOCTL_SCAN_PCIDEV:

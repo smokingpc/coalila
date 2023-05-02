@@ -7,10 +7,10 @@
 #include "DeviceExtension.h"
 #include "AutoLock.h"
 #include "ACPI_Functions.h"
-#include "IoctlCmd.h"
+#include "..\common\IoctlCmd.h"
 #include "DirectIo.h"   //Direct ReadPort, Direc tWritePort...etc.
 #include "IrpHandlers.h"
-#include "PCI_PCIe_Caps.h"
+#include "..\common\PCI_PCIe_Caps.h"
 #include "PciDevice.h"     //Scan PCI devices, Read PCI Cap....etc.
 
 

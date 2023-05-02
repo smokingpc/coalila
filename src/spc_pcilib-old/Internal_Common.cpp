@@ -2,6 +2,14 @@
 //
 
 #include "pch.h"
+
+static HANDLE KernelHandle = INVALID_HANDLE_VALUE;
+
+void OpenDirectIo()
+{}
+void CloseDirectIo()
+{}
+#if 0
 //Mcfg table won't be changed before reboot.
 static EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE MCFG = { 0 };
 static bool HasMcfgTable = false;
@@ -28,3 +36,4 @@ void GetMcfgTable()
         HasMcfgTable = true;
     }
 }
+#endif
