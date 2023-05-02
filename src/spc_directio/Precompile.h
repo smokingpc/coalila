@@ -5,6 +5,7 @@
 #include "Constant.h"
 #include "ACPI_Structures.h"
 #include "DeviceExtension.h"
+#include "AutoLock.h"
 #include "ACPI_Functions.h"
 #include "IoctlCmd.h"
 #include "DirectIo.h"   //Direct ReadPort, Direc tWritePort...etc.

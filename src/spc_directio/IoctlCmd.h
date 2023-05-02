@@ -36,7 +36,7 @@ enum class IO_SIZE {
 };
 
 //PCI Capability ID => refer to PCI Local Bus spec 3.0
-enum class PCICAP_ID {
+enum class PCI_CAPID {
     RESERVED = 0,
     PCI_POWER_MGR = 1,
     AGP = 2,
@@ -79,9 +79,18 @@ typedef struct {
     UCHAR BusId;    //0~255
     UCHAR DevId;    //0~32
     UCHAR FuncId;   //0~7
-    PCICAP_ID CapID;
+    PCI_CAPID CapID;
 }READ_PCI_CAP;
 
+typedef struct {
+    USHORT Segment; //0~65535, UEFI defined segment. it is called "Domain" in Linux.
+    UCHAR BusId;    //0~255
+    UCHAR DevId;    //0~32
+    UCHAR FuncId;   //0~7
+    BOOLEAN AttentionIndicator;
+    BOOLEAN PowerIndicator;
+    BOOLEAN PowerControl;
+}SET_PCIE_SLOT_CONTROL;
 
 #if 0
 typedef struct {
@@ -98,7 +107,7 @@ typedef struct {
             UCHAR FuncId;   //0~7
         } Id;
     };
-    PCICAP_ID CapID;
+    PCI_CAPID CapID;
 }READ_PCI_CAP;
 #endif
 

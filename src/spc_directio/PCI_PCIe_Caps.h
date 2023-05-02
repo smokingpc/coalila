@@ -19,9 +19,9 @@ typedef struct _PCI_MSI_CAP
             struct {
                 UINT32 RESERVED : 2;
                 UINT32 ADDR : 30;       //Low 30 bits of system specificed message address. always DWORD aligned.
-            }MLA;            //Message Signaled Interrupt Message Address
-            UINT32 MUA;      //Message Signaled Interrupt Upper Address
-        };
+            }LOWER;            //Message Signaled Interrupt Message Address
+            UINT32 UPPER;      //Message Signaled Interrupt Upper Address
+        }MSGADDR;
         UINT64 MA;      //Message Signaled Interrupt Address(64 bits)
     };
 
@@ -229,19 +229,19 @@ typedef struct {
     UINT32 OBFF : 2;
     UINT32 ExtendedFmtField : 1;
     UINT32 End2End_TLP_Prefix : 1;
+    UINT32 MaxEnd2EndTLPPrefixes : 2;
     UINT32 EmergencyPowerReduction : 2;
-    UINT32 EmergPowerReductInitRequired : 2;    //Emergency Power Reduction Initialization Required
-    UINT32 FRS : 1;
+    UINT32 EmergPowerReductInitRequired : 1;    //Emergency Power Reduction Initialization Required
     UINT32 Reserved : 4;
     UINT32 FRS : 1;
 }PCIE_DEVICE_CAPABILITY2;
 
-typedef struct {
-
-}PCIE_DEVICE_CONTROL2;
-
-typedef struct {
-}PCIE_DEVICE_STATUS2;
+//typedef struct {
+//
+//}PCIE_DEVICE_CONTROL2;
+//
+//typedef struct {
+//}PCIE_DEVICE_STATUS2;
 
 typedef struct 
 {

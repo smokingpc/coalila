@@ -9,6 +9,8 @@ typedef struct
 
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
     PUCHAR EcamBase;
+
+    KSPIN_LOCK Lock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;
 
 PSPCDIO_DEVEXT InitDeviceExtension(PDEVICE_OBJECT device);

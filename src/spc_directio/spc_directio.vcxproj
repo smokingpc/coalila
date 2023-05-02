@@ -297,6 +297,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ACPI_Functions.cpp" />
+    <ClCompile Include="AutoLock.cpp" />
     <ClCompile Include="DeviceExtension.cpp" />
     <ClCompile Include="DirectIo.cpp" />
     <ClCompile Include="DriverEntry.cpp" />
@@ -306,6 +307,7 @@
   <ItemGroup>
     <ClInclude Include="ACPI_Functions.h" />
     <ClInclude Include="ACPI_Structures.h" />
+    <ClInclude Include="AutoLock.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="DeviceExtension.h" />
     <ClInclude Include="DirectIo.h" />
