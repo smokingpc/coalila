@@ -3,6 +3,7 @@ typedef struct
 {
     PDEVICE_OBJECT  DevObj;
     UNICODE_STRING  DevName;
+    BOOLEAN SymLinkOk;
     UNICODE_STRING  SymbolicName;
     ACPI_MCFG_TABLE McfgTable;
     ULONG AcpiTableTags[1024];

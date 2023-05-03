@@ -24,20 +24,31 @@ NTSTATUS CreateDevice(_In_ PDRIVER_OBJECT driver)
     status = IoCreateSymbolicLink(&devext->SymbolicName, &devname);
     
     if (!NT_SUCCESS(status))
+    {
+        IoDeleteDevice(device);
         return status;
+    }
 
+    devext->SymLinkOk = TRUE;
     status = SetupAcpiInfo(devext);
-
-    //will system call DriverUnload when return error?
-
+    if (!NT_SUCCESS(status))
+    {
+        IoDeleteSymbolicLink(&devext->SymbolicName);
+        IoDeleteDevice(device);
+        return status;
+    }
     return status;
 }
 void DeleteDevice(_In_ PDEVICE_OBJECT device)
 {
     PSPCDIO_DEVEXT devext = GetDevExt(device);
     TeardownAcpiInfo(devext);
-    IoDeleteSymbolicLink(&devext->SymbolicName);
-    IoDeleteDevice(device);
+    
+    if(devext->SymLinkOk)
+        IoDeleteSymbolicLink(&devext->SymbolicName);
+
+    if(NULL != devext->DevObj)
+        IoDeleteDevice(device);
 }
 
 void DriverUnload(_In_ PDRIVER_OBJECT DriverObject)
@@ -57,6 +68,7 @@ NTSTATUS DriverEntry(
 {
     UNREFERENCED_PARAMETER(RegistryPath);
     NTSTATUS status = STATUS_SUCCESS;
+    DbgBreakPoint();
 
     DriverObject->DriverUnload = DriverUnload;
     InitIrpHandlers(DriverObject);

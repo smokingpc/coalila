@@ -11,7 +11,7 @@ BOOLEAN ReadPCIeCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP *result)
     
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_READ_PORT, &request, sizeof(READ_PCI_CAP), result, sizeof(PCIE_CAP), ret_size);
+    error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCIE_CAP), ret_size);
     if (error != ERROR_SUCCESS)
         return FALSE;
     return TRUE;
@@ -27,7 +27,7 @@ BOOLEAN ReadMsiCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* resul
 
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_READ_PORT, &request, sizeof(READ_PCI_CAP), &result, sizeof(PCI_MSI_CAP), ret_size);
+    error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), &result, sizeof(PCI_MSI_CAP), ret_size);
     if (error != ERROR_SUCCESS)
         return FALSE;
     return TRUE;
@@ -43,7 +43,7 @@ BOOLEAN ReadMsixCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* res
 
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_READ_PORT, &request, sizeof(READ_PCI_CAP), &result, sizeof(PCI_MSI_CAP), ret_size);
+    error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), &result, sizeof(PCI_MSI_CAP), ret_size);
     if (error != ERROR_SUCCESS)
         return FALSE;
     return TRUE;

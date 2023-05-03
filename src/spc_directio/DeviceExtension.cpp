@@ -6,6 +6,7 @@ PSPCDIO_DEVEXT InitDeviceExtension(PDEVICE_OBJECT device)
     RtlZeroMemory(devext, sizeof(SPCDIO_DEVEXT));
 
     devext->DevObj = device;
+    devext->SymLinkOk = FALSE;
     RtlInitUnicodeString(&devext->DevName, DEVICE_NAME);
     RtlInitUnicodeString(&devext->SymbolicName, SYMLINK_NAME);
 

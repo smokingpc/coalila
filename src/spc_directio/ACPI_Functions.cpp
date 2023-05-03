@@ -1,7 +1,7 @@
 #include "Precompile.h"
 
 #define FIRMWARE_ACPI ((ULONG) 'ACPI')
-#define TABLE_MCFG ((ULONG) 'MCFG')
+#define TABLE_MCFG ((ULONG) 'GFCM')
 
 NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext);
 void UnmapEcamBase(PSPCDIO_DEVEXT devext);

@@ -4,7 +4,6 @@
 // Windows Header Files
 #include <tchar.h>
 #include <windows.h>
-//#include <ntdef.h>
 #include <winioctl.h>
 
 #include "..\common\IoctlCmd.h"
