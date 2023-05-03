@@ -14,7 +14,7 @@ PnpLockDown=1
 ;This template is supported for OS version 17763 (Windows 10 version 1809) and after.
 ;For Windows OS prior to Windows 10 1809 set DefaultDestDir = 12
 [DestinationDirs]
-DefaultDestDir = 12
+DefaultDestDir = 12     ;win2019 and Win10 don't support DestDir 13 for Legacy Drivers
 
 [SourceDisksNames]
 1 = %DiskName%,,,""
