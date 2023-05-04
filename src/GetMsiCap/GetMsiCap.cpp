@@ -20,11 +20,24 @@ void Usage()
 
 void PrintMsiCap(PCI_MSI_CAP *cap)
 {
+    _tprintf(_T("[MSI CAP]\n"));
     _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
     _tprintf(_T("MSIE=%d, MMC=%d, MME=%d, C64=%d, PVM=%d\n"), 
         cap->MC.MSIE, cap->MC.MMC, cap->MC.MME, cap->MC.C64, cap->MC.PVM);
     _tprintf(_T("MsgAddr = %llX\n"), cap->MA);
     _tprintf(_T("MD=%X, MMASK=%X, MPEND=%X\n"), cap->MD, cap->MMASK, cap->MPEND);
+}
+
+void PrintMsixCap(PCI_MSIX_CAP* cap)
+{
+    _tprintf(_T("[MSIX CAP]\n"));
+    _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
+    _tprintf(_T("MXC.FM=%d, MXC.MXE=%d, MXC.TS=%d\n"),
+        cap->MXC.FM, cap->MXC.MXE, cap->MXC.TS);
+    _tprintf(_T("MTAB.TBIR=%d, cap->MTAB.TO=0x%08X\n"),
+        cap->MTAB.TBIR, cap->MTAB.TO<<3);
+    _tprintf(_T("MPBA.PBIR=%d, cap->MPBA.PBAO=0x%08X\n"),
+        cap->MPBA.PBIR, cap->MPBA.PBAO << 3);
 }
 
 
@@ -39,8 +52,9 @@ int _tmain(int argc, _TCHAR* argv[])
     int bus_id = _tstoi(argv[1]);
     int dev_id = _tstoi(argv[2]);
     int func_id = _tstoi(argv[3]);
-    PCI_MSI_CAP cap = {0};
+    PCI_MSI_CAP cap = { 0 };
 
+    _tprintf(_T("getting MsiCap for Device BDF(%d,%d,%d)\n"), bus_id, dev_id, func_id);
     if(!ReadMsiCap(bus_id, dev_id, func_id, &cap))
         _tprintf(_T("ReadMsiCap() failed. LastError=%d\n"), GetLastError());
     else

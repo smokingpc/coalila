@@ -1,5 +1,12 @@
 #include "Precompile.h"
 
+bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
+{
+    if(NULL == cap || 0 == cap->CapabilityID || 0xFF == cap->CapabilityID)
+        return false;
+    return true;
+}
+
 //this function generates PCI_COMMON_HEADER address in ECAM space.
 //please refer to PCIe spec: Enhanced Configuration Access Mechanism.
 PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
@@ -12,7 +19,11 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
     offset.u.Dev = dev;
     offset.u.Func = func;
 
-    return devext->EcamBase + offset.AsAddr;
+    PUCHAR ret = devext->EcamBase + offset.AsAddr;
+    PPCI_COMMON_CONFIG cfg = (PPCI_COMMON_CONFIG) ret;
+    if(cfg->VendorID == 0xffff)  //not mapped so only can read 0xFFFF(invalid value)
+        return NULL;
+    return ret;
 }
 ULONG ParsePciCapSize(PCI_CAPID cap_id)
 {
@@ -36,8 +47,11 @@ bool IsBufferSizeOkForCap(ULONG buf_size, PCI_CAPID cap_id)
 PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
 {
     PUCHAR header = GetEcamCfgAddr(devext, bus_id, dev_id, func_id);
+    if(NULL == header)
+        return NULL;
+
     PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)(header + sizeof(PCI_COMMON_HEADER));
-    while (NULL != cap && 0 != (UCHAR)cap_id)
+    while (IsValidCap(cap))
     {
         if (cap->CapabilityID == (UCHAR)cap_id)
             break;
@@ -45,7 +59,10 @@ PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UC
         if (0 == cap->Next)
             cap = NULL;
         else
-            cap = (PPCI_CAPABILITIES_HEADER)(header + sizeof(PCI_COMMON_HEADER) + cap->Next);
+        {
+            //cap->Next means "offset from HeaderBegin, not "
+            cap = (PPCI_CAPABILITIES_HEADER)(header + cap->Next);
+        }
     }
 
     return (PUCHAR)cap;
