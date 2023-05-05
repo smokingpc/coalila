@@ -13,28 +13,16 @@ void Usage()
     _tprintf(_T("SetPcieSlotIndicator.exe is a tool to turn on/off the indicator(LED) \nof specified PCIe slot.\n"));
     _tprintf(_T("Device is specified by BusId/DeviceId/FunctionId (BDF).\n"));
     _tprintf(_T("BDF id are decimal number.\n"));
-    _tprintf(_T("Format: GetMsiXCap.exe <BusID> <DevID> <FuncID>\n"));
+    _tprintf(_T("Format: SetPcieSlotIndicator.exe <BusID> <DevID> <FuncID> <atten led on/off> <power led on/off>\n"));
+    _tprintf(_T("        on/off use TRUE or FALSE.\n"));
     _tprintf(_T("e.g.\n"));
-    _tprintf(_T("Assume you want to get MSIX CAP from device (Bus 02, Device 31, Function 2):\n"));
-    _tprintf(_T("  GetMsiXCap.exe 2 31 2\n\n"));
+    _tprintf(_T("Assume you want to Power LED on and Attention LED off for device (Bus 02, Device 31, Function 2):\n"));
+    _tprintf(_T("  GetMsiXCap.exe 2 31 2 FALSE TRUE\n\n"));
 }
-
-void PrintMsixCap(PCI_MSIX_CAP* cap)
-{
-    _tprintf(_T("[MSIX CAP]\n"));
-    _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
-    _tprintf(_T("MXC.FM=%d, MXC.MXE=%d, MXC.TS=%d\n"),
-        cap->MXC.FM, cap->MXC.MXE, cap->MXC.TS);
-    _tprintf(_T("MTAB.TBIR=%d, cap->MTAB.TO=0x%08X\n"),
-        cap->MTAB.TBIR, cap->MTAB.TO << 3);
-    _tprintf(_T("MPBA.PBIR=%d, cap->MPBA.PBAO=0x%08X\n"),
-        cap->MPBA.PBIR, cap->MPBA.PBAO << 3);
-}
-
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    if (argc < 4)
+    if (argc < 6)
     {
         Usage();
         return -1;
@@ -43,14 +31,19 @@ int _tmain(int argc, _TCHAR* argv[])
     int bus_id = _tstoi(argv[1]);
     int dev_id = _tstoi(argv[2]);
     int func_id = _tstoi(argv[3]);
+    BOOLEAN att_led = FALSE;
+    BOOLEAN pow_led = FALSE;
     PCI_MSIX_CAP cap = { 0 };
 
-    _tprintf(_T("getting MsixCap for Device BDF(%d,%d,%d)\n"), bus_id, dev_id, func_id);
-    if (!ReadMsixCap(bus_id, dev_id, func_id, &cap))
-        _tprintf(_T("ReadMsixCap() failed. LastError=%d\n"), GetLastError());
-    else
-        PrintMsixCap(&cap);
+    if (_tcsicmp(argv[4], _T("true")) == 0)
+        att_led = TRUE;
 
+    if (_tcsicmp(argv[5], _T("true")) == 0)
+        pow_led = TRUE;
+
+    _tprintf(_T("Set Device BDF(%d,%d,%d) LED(Atten=%d, Power=%d)\n"), bus_id, dev_id, func_id, att_led, pow_led);
+    SetPCIeSlotAttentionIndicator(bus_id, dev_id, func_id, att_led);
+    SetPCIeSlotPowerIndicator(bus_id, dev_id, func_id, pow_led);
 
     return 0;
 }

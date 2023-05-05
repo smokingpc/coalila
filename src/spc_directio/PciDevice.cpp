@@ -140,12 +140,21 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
         return STATUS_NOT_FOUND;
 
     PCIE_CAP *pcie = (PCIE_CAP*)cap;
-    if(pcie->SlotCtrl.AttentionIndicator != arg->AttentionIndicator)
-        pcie->SlotCtrl.AttentionIndicator = arg->AttentionIndicator;
-    if(pcie->SlotCtrl.PowerIndicator != arg->PowerIndicator)
-        pcie->SlotCtrl.PowerIndicator = arg->PowerIndicator;
-    if(pcie->SlotCtrl.PowerControl != arg->PowerControl)
-        pcie->SlotCtrl.PowerControl = arg->PowerControl;
+    switch(arg->Target)
+    {
+        case SLOT_CTRL_FIELD::ATT_INDICATOR:      //Attention Indicator   (led)
+            if(pcie->SlotCap.AttentionIndicator && pcie->SlotCtrl.AttentionIndicator != arg->Value)
+                pcie->SlotCtrl.AttentionIndicator = arg->Value;
+            break;
+        case SLOT_CTRL_FIELD::PWR_INDICATOR:      //Power Indicator   (led)
+            if (pcie->SlotCap.PowerIndicator && pcie->SlotCtrl.PowerIndicator != arg->Value)
+                pcie->SlotCtrl.PowerIndicator = arg->Value;
+            break;
+        case SLOT_CTRL_FIELD::PWR_CONTROL:        //Slot Power on/off
+            if (pcie->SlotCap.PowerConotroller && pcie->SlotCtrl.PowerControl != arg->Value)
+                pcie->SlotCtrl.PowerControl = arg->Value;
+            break;
+    }
 
     return STATUS_SUCCESS;
 }

@@ -157,7 +157,7 @@ typedef struct {
     UINT32 PowerConotroller : 1;
     UINT32 MRL_Sensor : 1;
     UINT32 AttentionIndicator : 1;
-    UINT32 PowerInticator : 1;
+    UINT32 PowerIndicator : 1;
     UINT32 HotPlugSurprise : 1;
     UINT32 HotPlugCapable : 1;
     UINT32 SlotPowerLimitValue : 8;

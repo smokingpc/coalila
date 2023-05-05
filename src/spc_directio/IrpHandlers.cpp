@@ -68,7 +68,10 @@ NTSTATUS DeviceIoControlHandler(
     case IOCTL_READ_CAP:
         status = ReadPciCap(devext, buffer, in_size, out_size, ret_info);
         break;
-    case IOCTL_PCIE_SLOTCTRL:
+    //case IOCTL_PCIE_ATTEN_IDR:
+    //case IOCTL_PCIE_POWER_IDR:
+    //case IOCTL_PCIE_SLOT_POWER:
+    case IOCTL_PCIE_SLOT_CTRL:
         status = PCIeSetSlotControl(devext, buffer, in_size, out_size, ret_info);
         break;
     default:

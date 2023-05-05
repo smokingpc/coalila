@@ -24,7 +24,11 @@
 #define DIO_SCAN_PCIDEV     (120)
 //read specified CAPABILITY block which followed after PCIDEV_CONFIG_SPACE
 #define DIO_READ_CAP        (121)
-#define DIO_PCIE_SLOT_CTRL  (140)   
+#define DIO_PCIE_SLOT_CTRL  (140)
+
+//#define DIO_PCIE_ATTEN_IDR  (141)     //Slot Attention Indicator(LED) cmd
+//#define DIO_PCIE_POWER_IDR  (142)     //Slot Power Indicator(LED) cmd
+//#define DIO_PCIE_SLOT_POWER  (143)  //Slot Power Control(turn on/off slot power)
 
 //following macro can fetch corresponding fields from IOCTL codes
 //DEVICE_TYPE_FROM_CTL_CODE
@@ -36,7 +40,10 @@
 #define IOCTL_WRITE_ADDR    CTL_CODE(DIO_DEVTYPE, DIO_WRITE_REG, METHOD_BUFFERED, FILE_WRITE_ACCESS)
 #define IOCTL_SCAN_PCIDEV   CTL_CODE(DIO_DEVTYPE, DIO_SCAN_PCIDEV, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define IOCTL_READ_CAP      CTL_CODE(DIO_DEVTYPE, DIO_READ_CAP, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_PCIE_SLOTCTRL CTL_CODE(DIO_DEVTYPE, DIO_PCIE_SLOT_CTRL, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_PCIE_SLOT_CTRL    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_SLOT_CTRL, METHOD_BUFFERED, FILE_READ_ACCESS)
+//#define IOCTL_PCIE_ATTEN_IDR    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_ATTEN_IDR, METHOD_BUFFERED, FILE_READ_ACCESS)
+//#define IOCTL_PCIE_POWER_IDR    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_POWER_IDR, METHOD_BUFFERED, FILE_READ_ACCESS)
+//#define IOCTL_PCIE_SLOT_POWER   CTL_CODE(DIO_DEVTYPE, DIO_PCIE_SLOT_POWER, METHOD_BUFFERED, FILE_READ_ACCESS)
 
 //#define IOCTL_WRITE_CAP     CTL_CODE(DIO_DEVTYPE, DIO_WRITE_CAP, METHOD_BUFFERED, FILE_WRITE_ACCESS)
 
@@ -73,6 +80,13 @@ enum class PCI_CAPID {
     FPB = 0x15,
 };
 
+enum class SLOT_CTRL_FIELD {
+    UNKNOWN = 0,
+    ATT_INDICATOR = 1,      //Attention Indicator   (led)
+    PWR_INDICATOR = 2,      //Power Indicator   (led)
+    PWR_CONTROL = 3,        //Slot Power on/off
+};
+
 //for IOCTL_READPORT
 typedef struct {
     ULONG_PTR Address;
@@ -100,30 +114,10 @@ typedef struct {
     UCHAR BusId;    //0~255
     UCHAR DevId;    //0~32
     UCHAR FuncId;   //0~7
-    BOOLEAN AttentionIndicator;
-    BOOLEAN PowerIndicator;
-    BOOLEAN PowerControl;
+
+    SLOT_CTRL_FIELD Target;
+    BOOLEAN Value;
 }SET_PCIE_SLOT_CONTROL;
-
-#if 0
-typedef struct {
-    union {
-        struct {
-            USHORT VendorId;
-            USHORT DeviceId;
-        }Name;
-
-        struct {
-            USHORT Segment; //0~65535, UEFI defined segment. it is called "Domain" in Linux.
-            UCHAR BusId;    //0~255
-            UCHAR DevId;    //0~32
-            UCHAR FuncId;   //0~7
-        } Id;
-    };
-    PCI_CAPID CapID;
-}READ_PCI_CAP;
-#endif
-
 
 #pragma region ======== PCI DEVICE CONFIG and CAPABILITY structures ========
 #pragma pack(1)

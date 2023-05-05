@@ -28,19 +28,6 @@ void PrintMsiCap(PCI_MSI_CAP *cap)
     _tprintf(_T("MD=%X, MMASK=%X, MPEND=%X\n"), cap->MD, cap->MMASK, cap->MPEND);
 }
 
-void PrintMsixCap(PCI_MSIX_CAP* cap)
-{
-    _tprintf(_T("[MSIX CAP]\n"));
-    _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
-    _tprintf(_T("MXC.FM=%d, MXC.MXE=%d, MXC.TS=%d\n"),
-        cap->MXC.FM, cap->MXC.MXE, cap->MXC.TS);
-    _tprintf(_T("MTAB.TBIR=%d, cap->MTAB.TO=0x%08X\n"),
-        cap->MTAB.TBIR, cap->MTAB.TO<<3);
-    _tprintf(_T("MPBA.PBIR=%d, cap->MPBA.PBAO=0x%08X\n"),
-        cap->MPBA.PBIR, cap->MPBA.PBAO << 3);
-}
-
-
 int _tmain(int argc, _TCHAR* argv[])
 {
     if(argc < 4)
