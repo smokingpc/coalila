@@ -68,7 +68,6 @@ NTSTATUS DriverEntry(
 {
     UNREFERENCED_PARAMETER(RegistryPath);
     NTSTATUS status = STATUS_SUCCESS;
-    DbgBreakPoint();
 
     DriverObject->DriverUnload = DriverUnload;
     InitIrpHandlers(DriverObject);
