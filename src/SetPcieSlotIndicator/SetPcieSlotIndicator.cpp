@@ -17,7 +17,7 @@ void Usage()
     _tprintf(_T("        on/off use TRUE or FALSE.\n"));
     _tprintf(_T("e.g.\n"));
     _tprintf(_T("Assume you want to Power LED on and Attention LED off for device (Bus 02, Device 31, Function 2):\n"));
-    _tprintf(_T("  GetMsiXCap.exe 2 31 2 FALSE TRUE\n\n"));
+    _tprintf(_T("  SetPcieSlotIndicator.exe 2 31 2 FALSE TRUE\n\n"));
 }
 
 int _tmain(int argc, _TCHAR* argv[])

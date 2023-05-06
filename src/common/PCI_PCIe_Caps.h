@@ -67,7 +67,6 @@ typedef struct {
     UINT16 Reserved : 1;
 }PCIE_CAPABILITY_REG;
 
-
 typedef struct {
     UINT32 MaxPayloadSupport : 3;
     UINT32 PhantomFunctionSupport : 2;
@@ -263,12 +262,15 @@ typedef struct
     PCIE_SLOT_CONTROL SlotCtrl;
     PCIE_SLOT_STATUS SlotStatus;
     PCIE_ROOT_CONTROL RootCtrl;
-    PCIE_ROOT_CAPABILITY RootCap;
-    PCIE_ROOT_STATUS RootStatus;
-    PCIE_DEVICE_CAPABILITY2 DevCap2;
-    UINT16 DevCtrl2;
-    UINT16 DevStatus2;
+    //PCIE_ROOT_CAPABILITY RootCap;
+    //PCIE_ROOT_STATUS RootStatus;
+    //PCIE_DEVICE_CAPABILITY2 DevCap2;
     //PCIE_DEVICE_CONTROL2 DevCtrl2;
     //PCIE_DEVICE_STATUS2 DevStatus2;
+    UINT16 RootCap;
+    UINT32 RootStatus;
+    UINT32 DevCap2;
+    UINT16 DevCtrl2;
+    UINT16 DevStatus2;
 }PCIE_CAP, * PPCIE_CAP;
 #pragma pack()
