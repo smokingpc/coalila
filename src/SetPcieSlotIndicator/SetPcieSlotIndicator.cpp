@@ -33,7 +33,6 @@ int _tmain(int argc, _TCHAR* argv[])
     int func_id = _tstoi(argv[3]);
     BOOLEAN att_led = FALSE;
     BOOLEAN pow_led = FALSE;
-    PCI_MSIX_CAP cap = { 0 };
 
     if (_tcsicmp(argv[4], _T("true")) == 0)
         att_led = TRUE;
