@@ -38,7 +38,6 @@ NTSTATUS DirectReadIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& re
         RtlCopyMemory(buffer, &out_data, ret_size);
     return status;
 }
-
 NTSTATUS DirectWriteIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -69,7 +68,6 @@ NTSTATUS DirectWriteIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& r
 
     return status;
 }
-
 NTSTATUS DirectReadRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -113,7 +111,6 @@ NTSTATUS DirectReadRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& 
         RtlCopyMemory(buffer, &out_data, ret_size);
     return status;
 }
-
 NTSTATUS DirectWriteRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;

@@ -59,7 +59,7 @@
 #define DIO_WRITE_REG       (103)
 
 //return PCIe VENID and DEVID array
-#define DIO_SCAN_PCIDEV     (120)
+#define DIO_READ_PCIHEADER  (120)
 //read specified CAPABILITY block which followed after PCIDEV_CONFIG_SPACE
 #define DIO_READ_CAP        (121)
 #define DIO_PCIE_SLOT_CTRL  (140)
@@ -76,7 +76,7 @@
 #define IOCTL_WRITE_PORT    CTL_CODE(DIO_DEVTYPE, DIO_WRITE_PORT, METHOD_BUFFERED, FILE_WRITE_ACCESS)
 #define IOCTL_READ_ADDR     CTL_CODE(DIO_DEVTYPE, DIO_READ_REG, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define IOCTL_WRITE_ADDR    CTL_CODE(DIO_DEVTYPE, DIO_WRITE_REG, METHOD_BUFFERED, FILE_WRITE_ACCESS)
-#define IOCTL_SCAN_PCIDEV   CTL_CODE(DIO_DEVTYPE, DIO_SCAN_PCIDEV, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_READ_PCIHEADER  CTL_CODE(DIO_DEVTYPE, DIO_READ_PCIHEADER, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define IOCTL_READ_CAP      CTL_CODE(DIO_DEVTYPE, DIO_READ_CAP, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define IOCTL_PCIE_SLOT_CTRL    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_SLOT_CTRL, METHOD_BUFFERED, FILE_READ_ACCESS)
 //#define IOCTL_PCIE_ATTEN_IDR    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_ATTEN_IDR, METHOD_BUFFERED, FILE_READ_ACCESS)
@@ -138,6 +138,14 @@ typedef struct {
     ULONG_PTR Data;
 }DIRECTIO_WRITE, * PDIRECTIO_WRITE;
 
+//for IOCTL_READ_PCIHEADER
+typedef struct {
+    USHORT Segment; //0~65535, UEFI defined segment. it is called "Domain" in Linux.
+    UCHAR BusId;    //0~255
+    UCHAR DevId;    //0~32
+    UCHAR FuncId;   //0~7
+}READ_PCI_CFGHEADER;
+
 //for IOCTL_READ_CAP
 typedef struct {
     USHORT Segment; //0~65535, UEFI defined segment. it is called "Domain" in Linux.
@@ -160,7 +168,7 @@ typedef struct {
 #pragma region ======== PCI DEVICE CONFIG and CAPABILITY structures ========
 #pragma pack(1)
 
-//for IOCTL_SCAN_PCIDEV output
+//for IOCTL_READ_PCIHEADER output
 //this structure definition copied from struct PCI_COMMON_CONFIG in wdm.h.
 typedef struct {
     USHORT  VendorID;                   // (ro)
@@ -220,7 +228,7 @@ typedef struct {
         //Cardbus is almost extinct. So I skip type2 definition...
     } DUMMYSTRUCTNAME;
     UCHAR   Device[192];
-}PCIDEV_CONFIG_SPACE, * PPCIDEV_CONFIG_SPACE;
+}PCIDEV_CFG_HEADER, * PPCIDEV_CFG_HEADER;
 #pragma pack()
 
 #pragma endregion ======== PCI DEVICE CONFIG and CAPABILITY structures ========

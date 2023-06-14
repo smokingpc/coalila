@@ -62,8 +62,9 @@ NTSTATUS DeviceIoControlHandler(
     case IOCTL_WRITE_ADDR:
         status = DirectWriteRegister(buffer, in_size, out_size, ret_info);
         break;
-    case IOCTL_SCAN_PCIDEV:
-        status = ScanPciBus(devext, buffer, in_size, out_size, ret_info);
+    case IOCTL_READ_PCIHEADER:
+        status = ReadPciCfgHeader(devext, buffer, in_size, out_size, ret_info);
+        DbgBreakPoint();
         break;
     case IOCTL_READ_CAP:
         status = ReadPciCap(devext, buffer, in_size, out_size, ret_info);

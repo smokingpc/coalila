@@ -67,22 +67,44 @@ PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UC
 
     return (PUCHAR)cap;
 }
-NTSTATUS ScanPciBus(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+
+NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     UNREFERENCED_PARAMETER(devext);
     UNREFERENCED_PARAMETER(buffer);
     UNREFERENCED_PARAMETER(out_size);
-    //NTSTATUS status = STATUS_SUCCESS;
 
-    if (in_size < sizeof(DIRECTIO_READ))
+    if (in_size < sizeof(READ_PCI_CFGHEADER))
     {
-        ret_size = sizeof(sizeof(DIRECTIO_READ));
+        ret_size = sizeof(READ_PCI_CFGHEADER);
+        return STATUS_INVALID_PARAMETER;
+    }
+    if (out_size < sizeof(PCIDEV_CFG_HEADER))
+    {
+        ret_size = sizeof(PCIDEV_CFG_HEADER);
         return STATUS_INVALID_PARAMETER;
     }
 
-    ret_size = 0;
-    return STATUS_NOT_SUPPORTED;
+    if (NULL == devext->EcamBase)
+    {
+        ret_size = 0;
+        return STATUS_ACPI_NOT_INITIALIZED;
+    }
+
+    READ_PCI_CFGHEADER* arg = (READ_PCI_CFGHEADER*)buffer;
+    UCHAR bus_id = arg->BusId;
+    UCHAR dev_id = arg->DevId;
+    UCHAR func_id = arg->FuncId;
+
+    PCIDEV_CFG_HEADER *pcicfg = (PCIDEV_CFG_HEADER*)GetEcamCfgAddr(devext,bus_id, dev_id, func_id);
+    if(NULL == pcicfg)
+        return STATUS_NOT_FOUND;
+    ret_size = sizeof(PCIDEV_CFG_HEADER);
+    RtlCopyMemory(buffer, pcicfg, ret_size);
+
+    return STATUS_SUCCESS;
 }
+
 NTSTATUS ReadPciCap(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     if (in_size < sizeof(READ_PCI_CAP))

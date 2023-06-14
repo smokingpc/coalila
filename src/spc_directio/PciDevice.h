@@ -80,8 +80,7 @@ typedef union _ECAM_ADDR {
 } ECAM_ADDR, * PECAM_ADDR;
 #endif
 #endif
-NTSTATUS ScanPciBus(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
+NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
 NTSTATUS ReadPciCap(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
 NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-
 PUCHAR GetPciDevCfgAddrByEcam(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func);
