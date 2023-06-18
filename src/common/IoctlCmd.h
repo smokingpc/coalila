@@ -170,6 +170,12 @@ typedef struct {
 
 //for IOCTL_READ_PCIHEADER output
 //this structure definition copied from struct PCI_COMMON_CONFIG in wdm.h.
+
+typedef struct _PCI_HEADER_TYPE{
+    UCHAR Type : 7;
+    UCHAR IsMultiFunc : 1;
+}PCI_HEADER_TYPE, *PPCI_HEADER_TYPE;
+
 typedef struct {
     USHORT  VendorID;                   // (ro)
     USHORT  DeviceID;                   // (ro)
@@ -181,7 +187,7 @@ typedef struct {
     UCHAR   BaseClass;                  // (ro)
     UCHAR   CacheLineSize;              // (ro+)
     UCHAR   LatencyTimer;               // (ro+)
-    UCHAR   HeaderType;                 // (ro)
+    PCI_HEADER_TYPE   HeaderType;                 // (ro)
     UCHAR   BIST;                       // Built in self test
 
     union {
@@ -225,7 +231,9 @@ typedef struct {
             UCHAR   InterruptPin;
             USHORT  BridgeControl;
         } Type1;
-        //Cardbus is almost extinct. So I skip type2 definition...
+        //NOTE: In WDK deifnition , there is a Type2 structure for Cardbus device here.
+        //According Cardbus is almost extinct, so I skip type2 definition...
+
     } DUMMYSTRUCTNAME;
     UCHAR   Device[192];
 }PCIDEV_CFG_HEADER, * PPCIDEV_CFG_HEADER;

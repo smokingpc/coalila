@@ -48,7 +48,7 @@ BOOLEAN ReadMsixCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* res
         return FALSE;
     return TRUE;
 }
-BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, READ_PCI_CFGHEADER* result)
+BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER* result)
 {
     READ_PCI_CFGHEADER request = 
     {
@@ -59,7 +59,7 @@ BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, READ_PCI_CFG
 
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(READ_PCI_CFGHEADER), result, sizeof(READ_PCI_CFGHEADER), ret_size);
+    error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(PCIDEV_CFG_HEADER), result, sizeof(READ_PCI_CFGHEADER), ret_size);
     if (error != ERROR_SUCCESS)
         return FALSE;
     return TRUE;
