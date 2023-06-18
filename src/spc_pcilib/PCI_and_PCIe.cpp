@@ -59,9 +59,10 @@ BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_H
 
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(PCIDEV_CFG_HEADER), result, sizeof(READ_PCI_CFGHEADER), ret_size);
+    error = SendIoctl(IOCTL_READ_PCIHEADER, &request, sizeof(READ_PCI_CFGHEADER), result, sizeof(PCIDEV_CFG_HEADER), ret_size);
     if (error != ERROR_SUCCESS)
         return FALSE;
+
     return TRUE;
 }
 

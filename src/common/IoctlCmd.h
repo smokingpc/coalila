@@ -175,6 +175,45 @@ typedef struct _PCI_HEADER_TYPE{
     UCHAR Type : 7;
     UCHAR IsMultiFunc : 1;
 }PCI_HEADER_TYPE, *PPCI_HEADER_TYPE;
+typedef struct _PCI_HEADER_TYPE_0 {
+    ULONG   BaseAddresses[PCI_TYPE0_ADDRESSES];
+    ULONG   CIS;
+    USHORT  SubVendorID;
+    USHORT  SubSystemID;
+    ULONG   ROMBaseAddress;
+    UCHAR   CapabilitiesPtr;
+    UCHAR   Reserved1[3];
+    ULONG   Reserved2;
+    UCHAR   InterruptLine;      //
+    UCHAR   InterruptPin;       // (ro)
+    UCHAR   MinimumGrant;       // (ro)
+    UCHAR   MaximumLatency;     // (ro)
+}PCI_HEADER_TYPE_0, *PPCI_HEADER_TYPE_0;
+
+typedef struct _PCI_HEADER_TYPE_1 {
+    ULONG   BaseAddresses[PCI_TYPE1_ADDRESSES];
+    UCHAR   PrimaryBus;
+    UCHAR   SecondaryBus;
+    UCHAR   SubordinateBus;
+    UCHAR   SecondaryLatency;
+    UCHAR   IOBase;
+    UCHAR   IOLimit;
+    USHORT  SecondaryStatus;
+    USHORT  MemoryBase;
+    USHORT  MemoryLimit;
+    USHORT  PrefetchBase;
+    USHORT  PrefetchLimit;
+    ULONG   PrefetchBaseUpper32;
+    ULONG   PrefetchLimitUpper32;
+    USHORT  IOBaseUpper16;
+    USHORT  IOLimitUpper16;
+    UCHAR   CapabilitiesPtr;
+    UCHAR   Reserved1[3];
+    ULONG   ROMBaseAddress;
+    UCHAR   InterruptLine;
+    UCHAR   InterruptPin;
+    USHORT  BridgeControl;
+} PCI_HEADER_TYPE_1, *PPCI_HEADER_TYPE_1;
 
 typedef struct {
     USHORT  VendorID;                   // (ro)
@@ -192,45 +231,9 @@ typedef struct {
 
     union {
         // type 0 is regular PCI and PCIe devices.
-        struct _PCI_HEADER_TYPE_0 {
-            ULONG   BaseAddresses[PCI_TYPE0_ADDRESSES];
-            ULONG   CIS;
-            USHORT  SubVendorID;
-            USHORT  SubSystemID;
-            ULONG   ROMBaseAddress;
-            UCHAR   CapabilitiesPtr;
-            UCHAR   Reserved1[3];
-            ULONG   Reserved2;
-            UCHAR   InterruptLine;      //
-            UCHAR   InterruptPin;       // (ro)
-            UCHAR   MinimumGrant;       // (ro)
-            UCHAR   MaximumLatency;     // (ro)
-        } Type0;
+        PCI_HEADER_TYPE_0 Type0;
         // PCI to PCI Bridge
-        struct _PCI_HEADER_TYPE_1 {
-            ULONG   BaseAddresses[PCI_TYPE1_ADDRESSES];
-            UCHAR   PrimaryBus;
-            UCHAR   SecondaryBus;
-            UCHAR   SubordinateBus;
-            UCHAR   SecondaryLatency;
-            UCHAR   IOBase;
-            UCHAR   IOLimit;
-            USHORT  SecondaryStatus;
-            USHORT  MemoryBase;
-            USHORT  MemoryLimit;
-            USHORT  PrefetchBase;
-            USHORT  PrefetchLimit;
-            ULONG   PrefetchBaseUpper32;
-            ULONG   PrefetchLimitUpper32;
-            USHORT  IOBaseUpper16;
-            USHORT  IOLimitUpper16;
-            UCHAR   CapabilitiesPtr;
-            UCHAR   Reserved1[3];
-            ULONG   ROMBaseAddress;
-            UCHAR   InterruptLine;
-            UCHAR   InterruptPin;
-            USHORT  BridgeControl;
-        } Type1;
+        PCI_HEADER_TYPE_1 Type1;
         //NOTE: In WDK deifnition , there is a Type2 structure for Cardbus device here.
         //According Cardbus is almost extinct, so I skip type2 definition...
 

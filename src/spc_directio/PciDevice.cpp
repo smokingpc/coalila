@@ -1,5 +1,11 @@
 #include "Precompile.h"
 
+__inline bool IsValidVendorID(PPCI_COMMON_CONFIG cfg)
+{
+    //not mapped PCI HEADER so only can read 0xFFFF or 0(invalid value)
+    return !(0xffff == cfg->VendorID || 0 == cfg->VendorID);
+}
+
 bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
 {
     if(NULL == cap || 0 == cap->CapabilityID || 0xFF == cap->CapabilityID)
@@ -21,7 +27,7 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
 
     PUCHAR ret = devext->EcamBase + offset.AsAddr;
     PPCI_COMMON_CONFIG cfg = (PPCI_COMMON_CONFIG) ret;
-    if(cfg->VendorID == 0xffff)  //not mapped so only can read 0xFFFF(invalid value)
+    if(!IsValidVendorID(cfg))
         return NULL;
     return ret;
 }

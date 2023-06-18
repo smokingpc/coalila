@@ -64,7 +64,6 @@ NTSTATUS DeviceIoControlHandler(
         break;
     case IOCTL_READ_PCIHEADER:
         status = ReadPciCfgHeader(devext, buffer, in_size, out_size, ret_info);
-        DbgBreakPoint();
         break;
     case IOCTL_READ_CAP:
         status = ReadPciCap(devext, buffer, in_size, out_size, ret_info);
@@ -80,13 +79,17 @@ NTSTATUS DeviceIoControlHandler(
         break;
     }
 
+    //Irp->IoStatus.Status is for higher level driver.
+    //if this request comes from usermode app, we should return status.
+    //usermode request will not retrieve Irp->IoStatus.Status, 
+    //it only check return of this dispatch function.
     Irp->IoStatus.Status = status;
     Irp->IoStatus.Information = ret_info;
 
     //This request is handled and no necessary to pass to other driver.
     //So we have to tell IoManager : "this I/O request finished. Please feedback to caller and clean up the irp"
     IoCompleteRequest(Irp, IO_NO_INCREMENT);
-    return STATUS_SUCCESS;  //tell I/O Manager : this request dispatching completed.
+    return status;  //tell I/O Manager : this request dispatching completed.
 }
 
 NTSTATUS IrpDefaultHandler(

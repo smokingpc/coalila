@@ -35,6 +35,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResetPcieSlotPower", "ResetPcieSlotPower\ResetPcieSlotPower.vcxproj", "{DA10D5D4-0D4B-4C90-916A-0EE9B706D0A3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListPCI", "ListPCI\ListPCI.vcxproj", "{F9059C65-A325-419C-A2F0-DF6087D63B38}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E275A354-5243-423E-807F-28EB83A630D9} = {E275A354-5243-423E-807F-28EB83A630D9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
