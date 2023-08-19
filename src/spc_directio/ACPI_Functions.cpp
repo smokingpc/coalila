@@ -44,18 +44,18 @@ NTSTATUS LoadAcpiMcfgTable(PSPCDIO_DEVEXT devext)
 NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext)
 {
     PHYSICAL_ADDRESS addr = { 0 };
-    addr.QuadPart = devext->McfgTable.Segment.BaseAddress;
+    addr.QuadPart = devext->McfgTable.Segment[0].BaseAddress;
     //Each Segment has 256MB. Currently only support 1 Segment....
-    devext->EcamBase = (PUCHAR)MmMapIoSpace(addr, ECAM_SEGMENT_SIZE, MmNonCached);
+    devext->EcamBase[0] = (PUCHAR)MmMapIoSpace(addr, ECAM_SEGMENT_SIZE, MmNonCached);
     if (NULL == devext->EcamBase)
         return STATUS_MEMORY_NOT_ALLOCATED;
     return STATUS_SUCCESS;
 }
 void UnmapEcamBase(PSPCDIO_DEVEXT devext)
 {
-    if (NULL != devext->EcamBase)
-        MmUnmapIoSpace(devext->EcamBase, ECAM_SEGMENT_SIZE);
-    devext->EcamBase = NULL;
+    if (NULL != devext->EcamBase[0])
+        MmUnmapIoSpace(devext->EcamBase[0], ECAM_SEGMENT_SIZE);
+    devext->EcamBase[0] = NULL;
 }
 NTSTATUS SetupAcpiInfo(PSPCDIO_DEVEXT devext)
 {

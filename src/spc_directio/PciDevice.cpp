@@ -20,6 +20,7 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR de
     UNREFERENCED_PARAMETER(bus);
     UNREFERENCED_PARAMETER(dev);
     UNREFERENCED_PARAMETER(func);
+
     return NULL;
 }
 
@@ -35,7 +36,7 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
     offset.u.Dev = dev;
     offset.u.Func = func;
 
-    PUCHAR ret = devext->EcamBase + offset.AsAddr;
+    PUCHAR ret = devext->EcamBase[0] + offset.AsAddr;
     PPCI_COMMON_CONFIG cfg = (PPCI_COMMON_CONFIG) ret;
     if(!IsValidVendorID(cfg))
         return NULL;

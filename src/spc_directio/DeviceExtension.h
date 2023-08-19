@@ -47,7 +47,7 @@ typedef struct
     ULONG AcpiTableTags[1024];
 
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
-    PUCHAR EcamBase;
+    PUCHAR EcamBase[MAX_ACPI_SEGMENT];
 
     KSPIN_LOCK Lock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;
