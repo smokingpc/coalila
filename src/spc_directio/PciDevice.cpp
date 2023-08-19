@@ -204,7 +204,9 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
                 status = STATUS_NOT_SUPPORTED;
             else
             {
-                pcie->SlotCtrl.PowerControl = arg->u.OnOff;
+            //refer to PCIe spec v5.0
+            //In PowerControl, 0 indicates "ON".
+                pcie->SlotCtrl.PowerControl = !arg->u.OnOff;
                 status = STATUS_SUCCESS;
             }
             break;
