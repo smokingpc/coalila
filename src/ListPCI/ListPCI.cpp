@@ -59,9 +59,9 @@ void PrintType1Header(_PCI_HEADER_TYPE_1 *type1)
     _tprintf(_T("\n"));
 }
 
-void PrintPciHeader(UCHAR bus, UCHAR dev, UCHAR func, PCIDEV_CFG_HEADER* header)
+void PrintPciHeader(USHORT domain, UCHAR bus, UCHAR dev, UCHAR func, PCIDEV_CFG_HEADER* header)
 {
-    _tprintf(_T("[PCI Device %02X.%02X.%X]\n"), bus, dev, func);
+    _tprintf(_T("[PCI Device %04X.%02X.%02X.%X]\n"), domain, bus, dev, func);
 
     _tprintf(_T("    VEN_%04X  DEV_%04X  REV=%X\n"), 
         header->VendorID, header->DeviceID, header->RevisionID);
@@ -88,34 +88,35 @@ void PrintPciHeader(UCHAR bus, UCHAR dev, UCHAR func, PCIDEV_CFG_HEADER* header)
     }
 }
 
-void QueryPCI(USHORT seg, UCHAR bus, UCHAR dev, UCHAR func)
+void QueryPCI(USHORT domain, UCHAR bus, UCHAR dev, UCHAR func)
 {
     PCIDEV_CFG_HEADER result = {0};
-    if(ReadPciCfgHeader(bus, dev, func, &result))
-        PrintPciHeader(bus, dev, func, &result);
+    DWORD error = ReadPciCfgHeader(domain, bus, dev, func, &result);
+    if(ERROR_SUCCESS == error)
+        PrintPciHeader(domain, bus, dev, func, &result);
 }
 
-void ScanDevice(USHORT seg, UCHAR bus, UCHAR dev) 
+void ScanDevice(USHORT domain, UCHAR bus, UCHAR dev)
 {
     for (UCHAR func = 0; func < 7; func++)
     {
-        QueryPCI(seg, bus, dev, func);
+        QueryPCI(domain, bus, dev, func);
     }
 }
 
-void ScanBus(USHORT seg, UCHAR bus) 
+void ScanBus(USHORT domain, UCHAR bus)
 {
     for (UCHAR dev = 0; dev < 32; dev++)
     {
-        ScanDevice(seg, bus, dev);
+        ScanDevice(domain, bus, dev);
     }
 }
 
-void ScanSegment(USHORT id)
+void ScanDomain(USHORT domain)
 {
     for (UCHAR bus = 0; bus < UCHAR_MAX; bus++)
     {
-        ScanBus(id, bus);
+        ScanBus(domain, bus);
     }
 }
 
@@ -126,7 +127,7 @@ int _tmain(int argc, _TCHAR* argv[])
     //UCHAR BusId;    //0~255
     //UCHAR DevId;    //0~32
     //UCHAR FuncId;   //0~7
-    ScanSegment(0);
+    ScanDomain(0);
 
     return 0;
 }

@@ -1,8 +1,26 @@
 #include "Precompile.h"
 
-BOOLEAN ReadPCIeCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP *result)
+INDICATOR_STATE LedStateToIndicatorState(LED_STATE state)
+{
+    switch (state)
+    {
+    case LED_STATE::OFF:
+        return INDICATOR_STATE::OFF;
+        break;
+    case LED_STATE::ON:
+        return INDICATOR_STATE::ON;
+        break;
+    case LED_STATE::BLINK:
+        return INDICATOR_STATE::BLINK;
+        break;
+    }
+    return INDICATOR_STATE::RESERVED;
+}
+
+DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP *result)
 {
     READ_PCI_CAP request = {
+        .Segment = segment,
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
@@ -12,13 +30,12 @@ BOOLEAN ReadPCIeCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP *result)
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCIE_CAP), ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-    return TRUE;
+    return error;
 }
-BOOLEAN ReadMsiCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result)
+DWORD ReadMsiCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result)
 {
     READ_PCI_CAP request = {
+        .Segment = segment,
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
@@ -28,13 +45,12 @@ BOOLEAN ReadMsiCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* resul
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCI_MSI_CAP), ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-    return TRUE;
+    return error;
 }
-BOOLEAN ReadMsixCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* result)
+DWORD ReadMsixCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* result)
 {
     READ_PCI_CAP request = {
+        .Segment = segment,
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
@@ -44,14 +60,13 @@ BOOLEAN ReadMsixCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* res
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCI_MSI_CAP), ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-    return TRUE;
+    return error;
 }
-BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER* result)
+DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER* result)
 {
     READ_PCI_CFGHEADER request = 
     {
+        .Segment = segment,
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
@@ -60,61 +75,50 @@ BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_H
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_READ_PCIHEADER, &request, sizeof(READ_PCI_CFGHEADER), result, sizeof(PCIDEV_CFG_HEADER), ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-
-    return TRUE;
+    return error;
 }
-
-BOOLEAN SetPCIeSlotAttentionIndicator(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN value)
+DWORD SetPCIeSlotAttentionIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state)
 {
     SET_PCIE_SLOT_CONTROL request = {
+        .Segment = segment,
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
         .Target = SLOT_CTRL_FIELD::ATT_INDICATOR,
-        .Value = value
     };
-
+    request.u.Indicator = LedStateToIndicatorState(state);
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(SET_PCIE_SLOT_CONTROL), NULL, 0, ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-    return TRUE;
+    return error;
 }
-BOOLEAN SetPCIeSlotPowerIndicator(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN value)
+DWORD SetPCIeSlotPowerIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state)
 {
     SET_PCIE_SLOT_CONTROL request = {
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
         .Target = SLOT_CTRL_FIELD::PWR_INDICATOR,
-        .Value = value
     };
-
+    request.u.Indicator = LedStateToIndicatorState(state);
+    
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(SET_PCIE_SLOT_CONTROL), NULL, 0, ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-    return TRUE;
+    return error;
 }
-BOOLEAN SetPCIeSlotPowerControl(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN value)
+DWORD SetPCIeSlotPowerControl(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN onoff)
 {
     SET_PCIE_SLOT_CONTROL request = {
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,
         .Target = SLOT_CTRL_FIELD::PWR_CONTROL,
-        .Value = value
     };
+    request.u.OnOff = onoff;
 
     DWORD error = 0;
     DWORD ret_size = 0;
     error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(SET_PCIE_SLOT_CONTROL), NULL, 0, ret_size);
-    if (error != ERROR_SUCCESS)
-        return FALSE;
-    return TRUE;
-
+    return error;
 }

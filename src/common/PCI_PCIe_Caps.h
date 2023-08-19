@@ -37,8 +37,6 @@
 // Enjoy it.
 // ================================================================
 
-
-
 #pragma pack(1)
 
 typedef struct _PCI_CAP_HEADER {

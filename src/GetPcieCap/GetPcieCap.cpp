@@ -12,12 +12,12 @@
 void Usage()
 {
     _tprintf(_T("GetPcieCap.exe is a tool to retrieve PCIe CAP from spcified Device.\n"));
-    _tprintf(_T("Device is specified by BusId/DeviceId/FunctionId (BDF).\n"));
+    _tprintf(_T("Device is specified by AcpiDomain(Segment)/BusId/DeviceId/FunctionId (BDF).\n"));
     _tprintf(_T("BDF id are decimal number.\n"));
-    _tprintf(_T("Format: GetPcieCap.exe <BusID> <DevID> <FuncID>\n"));
+    _tprintf(_T("Format: GetPcieCap.exe <Domain> <BusID> <DevID> <FuncID>\n"));
     _tprintf(_T("e.g.\n"));
-    _tprintf(_T("Assume you want to get PCIe CAP from device (Bus 02, Device 31, Function 2):\n"));
-    _tprintf(_T("  GetMsiXCap.exe 2 31 2\n\n"));
+    _tprintf(_T("Assume you want to get PCIe CAP from device (Domain 0, Bus 02, Device 31, Function 2):\n"));
+    _tprintf(_T("  GetMsiXCap.exe 0 2 31 2\n\n"));
 }
 
 void PrintPCIeCap(PCIE_CAP* cap)
@@ -113,19 +113,22 @@ void PrintPCIeCap(PCIE_CAP* cap)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    if (argc < 4)
+    if (argc < 5)
     {
         Usage();
         return -1;
     }
 
-    int bus_id = _tstoi(argv[1]);
-    int dev_id = _tstoi(argv[2]);
-    int func_id = _tstoi(argv[3]);
     PCIE_CAP cap = { 0 };
+    DWORD error = ERROR_SUCCESS;
+    int domain = _tstoi(argv[1]);
+    int bus_id = _tstoi(argv[2]);
+    int dev_id = _tstoi(argv[3]);
+    int func_id = _tstoi(argv[4]);
 
-    _tprintf(_T("getting PCIeCap for Device BDF(%d,%d,%d)\n"), bus_id, dev_id, func_id);
-    if (!ReadPCIeCap(bus_id, dev_id, func_id, &cap))
+    _tprintf(_T("getting PCIeCap for Device BDF(%d.%d.%d.%d)\n"), domain, bus_id, dev_id, func_id);
+    error = ReadPCIeCap(domain, bus_id, dev_id, func_id, &cap);
+    if(ERROR_SUCCESS != error)
         _tprintf(_T("ReadPCIeCap() failed. LastError=%d\n"), GetLastError());
     else
         PrintPCIeCap(&cap);

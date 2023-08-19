@@ -125,6 +125,14 @@ enum class SLOT_CTRL_FIELD {
     PWR_CONTROL = 3,        //Slot Power on/off
 };
 
+enum class INDICATOR_STATE : UINT16 {
+    RESERVED = 0,
+    ON = 1,
+    BLINK = 2,
+    OFF = 3,
+    MAX = 4,
+};
+
 //for IOCTL_READPORT
 typedef struct {
     ULONG_PTR Address;
@@ -162,7 +170,11 @@ typedef struct {
     UCHAR FuncId;   //0~7
 
     SLOT_CTRL_FIELD Target;
-    BOOLEAN Value;
+    union SLOT_CTRL_VALUE
+    {
+        BOOLEAN OnOff;
+        INDICATOR_STATE Indicator;
+    } u;
 }SET_PCIE_SLOT_CONTROL;
 
 #pragma region ======== PCI DEVICE CONFIG and CAPABILITY structures ========

@@ -44,18 +44,23 @@
 #define GRAID_DLLEXPORT DECLSPEC_IMPORT
 #endif
 
+enum class LED_STATE {
+    OFF = 0,
+    ON = 1,
+    BLINK = 2,
+};
 
 EXTERN_C_START
-GRAID_DLLEXPORT BOOLEAN DirectIoReadPort(DIRECTIO_READ* request, ULONG* out_data);
-GRAID_DLLEXPORT BOOLEAN DirectIoWritePort(DIRECTIO_WRITE* request);
-GRAID_DLLEXPORT BOOLEAN DirectIoReadAddr(DIRECTIO_READ* request, ULONG_PTR* out_data);
-GRAID_DLLEXPORT BOOLEAN DirectIoWriteAddr(DIRECTIO_WRITE* request);
-GRAID_DLLEXPORT BOOLEAN ReadPCIeCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP* result);
-GRAID_DLLEXPORT BOOLEAN ReadMsiCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result);
-GRAID_DLLEXPORT BOOLEAN ReadMsixCap(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* result);
-GRAID_DLLEXPORT BOOLEAN ReadPciCfgHeader(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER*result);
-GRAID_DLLEXPORT BOOLEAN SetPCIeSlotAttentionIndicator(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN value);
-GRAID_DLLEXPORT BOOLEAN SetPCIeSlotPowerIndicator(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN value);
-GRAID_DLLEXPORT BOOLEAN SetPCIeSlotPowerControl(UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN value);
+GRAID_DLLEXPORT DWORD DirectIoReadPort(DIRECTIO_READ* request, ULONG* out_data);
+GRAID_DLLEXPORT DWORD DirectIoWritePort(DIRECTIO_WRITE* request);
+GRAID_DLLEXPORT DWORD DirectIoReadAddr(DIRECTIO_READ* request, ULONG_PTR* out_data);
+GRAID_DLLEXPORT DWORD DirectIoWriteAddr(DIRECTIO_WRITE* request);
+GRAID_DLLEXPORT DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP* result);
+GRAID_DLLEXPORT DWORD ReadMsiCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result);
+GRAID_DLLEXPORT DWORD ReadMsixCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* result);
+GRAID_DLLEXPORT DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER*result);
+GRAID_DLLEXPORT DWORD SetPCIeSlotAttentionIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state);
+GRAID_DLLEXPORT DWORD SetPCIeSlotPowerIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state);
+GRAID_DLLEXPORT DWORD SetPCIeSlotPowerControl(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN onoff);
 EXTERN_C_END
 

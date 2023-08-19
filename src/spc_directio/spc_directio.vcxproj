@@ -335,6 +335,7 @@
     <ClCompile Include="DriverEntry.cpp" />
     <ClCompile Include="IrpHandlers.cpp" />
     <ClCompile Include="PciDevice.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\IoctlCmd.h" />
@@ -348,6 +349,7 @@
     <ClInclude Include="PciDevice.h" />
     <ClInclude Include="Precompile.h" />
     <ClInclude Include="IrpHandlers.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

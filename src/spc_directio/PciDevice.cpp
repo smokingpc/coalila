@@ -5,12 +5,22 @@ __inline bool IsValidVendorID(PPCI_COMMON_CONFIG cfg)
     //not mapped PCI HEADER so only can read 0xFFFF or 0(invalid value)
     return !(0xffff == cfg->VendorID || 0 == cfg->VendorID);
 }
-
 bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
 {
     if(NULL == cap || 0 == cap->CapabilityID || 0xFF == cap->CapabilityID)
         return false;
     return true;
+}
+
+PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR dev, UCHAR func)
+{
+//todo: implement multiple segment MCFG table
+    UNREFERENCED_PARAMETER(devext);
+    UNREFERENCED_PARAMETER(segment);
+    UNREFERENCED_PARAMETER(bus);
+    UNREFERENCED_PARAMETER(dev);
+    UNREFERENCED_PARAMETER(func);
+    return NULL;
 }
 
 //this function generates PCI_COMMON_HEADER address in ECAM space.
@@ -73,7 +83,6 @@ PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UC
 
     return (PUCHAR)cap;
 }
-
 NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     UNREFERENCED_PARAMETER(devext);
@@ -110,7 +119,6 @@ NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, UL
 
     return STATUS_SUCCESS;
 }
-
 NTSTATUS ReadPciCap(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
 {
     if (in_size < sizeof(READ_PCI_CAP))
@@ -167,22 +175,39 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
     if (NULL == cap)
         return STATUS_NOT_FOUND;
 
+    NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
     PCIE_CAP *pcie = (PCIE_CAP*)cap;
+    INDICATOR_STATE state = INDICATOR_STATE::RESERVED;
     switch(arg->Target)
     {
         case SLOT_CTRL_FIELD::ATT_INDICATOR:      //Attention Indicator   (led)
-            if(pcie->SlotCap.AttentionIndicator && pcie->SlotCtrl.AttentionIndicator != arg->Value)
-                pcie->SlotCtrl.AttentionIndicator = arg->Value;
+            if (!pcie->SlotCap.AttentionIndicator)
+                status = STATUS_NOT_SUPPORTED;
+            else
+            {
+                pcie->SlotCtrl.AttentionIndicator = (UINT16)state;
+                status = STATUS_SUCCESS;
+            }
             break;
         case SLOT_CTRL_FIELD::PWR_INDICATOR:      //Power Indicator   (led)
-            if (pcie->SlotCap.PowerIndicator && pcie->SlotCtrl.PowerIndicator != arg->Value)
-                pcie->SlotCtrl.PowerIndicator = arg->Value;
+            if (!pcie->SlotCap.PowerIndicator)
+                status = STATUS_NOT_SUPPORTED;
+            else
+            {
+                pcie->SlotCtrl.PowerIndicator = (UINT16)state;
+                status = STATUS_SUCCESS;
+            }
             break;
         case SLOT_CTRL_FIELD::PWR_CONTROL:        //Slot Power on/off
-            if (pcie->SlotCap.PowerConotroller && pcie->SlotCtrl.PowerControl != arg->Value)
-                pcie->SlotCtrl.PowerControl = arg->Value;
+            if (!pcie->SlotCap.PowerConotroller)
+                status = STATUS_NOT_SUPPORTED;
+            else
+            {
+                pcie->SlotCtrl.PowerControl = arg->u.OnOff;
+                status = STATUS_SUCCESS;
+            }
             break;
     }
 
-    return STATUS_SUCCESS;
+    return status;
 }

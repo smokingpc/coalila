@@ -3,6 +3,9 @@
 #define FIRMWARE_ACPI ((ULONG) 'ACPI')
 #define TABLE_MCFG ((ULONG) 'GFCM')
 
+//todo: check segment acpi table
+// https://github.com/KunYi/DumpACPI
+
 NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext);
 void UnmapEcamBase(PSPCDIO_DEVEXT devext);
 
