@@ -14,14 +14,19 @@ bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
 
 PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR dev, UCHAR func)
 {
-//todo: implement multiple segment MCFG table
-    UNREFERENCED_PARAMETER(devext);
-    UNREFERENCED_PARAMETER(segment);
-    UNREFERENCED_PARAMETER(bus);
-    UNREFERENCED_PARAMETER(dev);
-    UNREFERENCED_PARAMETER(func);
+    ECAM_OFFSET offset = { 0 };
+    if (NULL == devext->EcamBase)
+        return NULL;
 
-    return NULL;
+    offset.u.Bus = bus;
+    offset.u.Dev = dev;
+    offset.u.Func = func;
+
+    PUCHAR ret = devext->EcamBase[segment] + offset.AsAddr;
+    PPCI_COMMON_CONFIG cfg = (PPCI_COMMON_CONFIG)ret;
+    if (!IsValidVendorID(cfg))
+        return NULL;
+    return ret;
 }
 
 //this function generates PCI_COMMON_HEADER address in ECAM space.

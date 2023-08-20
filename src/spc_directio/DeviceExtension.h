@@ -44,10 +44,10 @@ typedef struct
     BOOLEAN SymLinkOk;
     UNICODE_STRING  SymbolicName;
     ACPI_MCFG_TABLE McfgTable;
-    ULONG AcpiTableTags[1024];
+    ULONG AcpiTableTags[MAX_ACPI_TABLE_TAGS];
 
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
-    PUCHAR EcamBase[MAX_ACPI_SEGMENT];
+    PUCHAR EcamBase[MAX_PCI_SEGMENTS];
 
     KSPIN_LOCK Lock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;

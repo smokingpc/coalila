@@ -43,19 +43,28 @@ NTSTATUS LoadAcpiMcfgTable(PSPCDIO_DEVEXT devext)
 
 NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext)
 {
-    PHYSICAL_ADDRESS addr = { 0 };
-    addr.QuadPart = devext->McfgTable.Segment[0].BaseAddress;
-    //Each Segment has 256MB. Currently only support 1 Segment....
-    devext->EcamBase[0] = (PUCHAR)MmMapIoSpace(addr, ECAM_SEGMENT_SIZE, MmNonCached);
-    if (NULL == devext->EcamBase)
-        return STATUS_MEMORY_NOT_ALLOCATED;
+    //Each Segment has 256MB. Currently only support 64 Segment....
+    RtlZeroMemory(devext->EcamBase, sizeof(devext->EcamBase));
+    for(ULONG i=0; i< MAX_PCI_SEGMENTS; i++)
+    {
+        PHYSICAL_ADDRESS addr = { 0 };
+        addr.QuadPart = devext->McfgTable.Segment[i].BaseAddress;
+        if(0 == addr.QuadPart)
+            continue;
+        devext->EcamBase[i] = (PUCHAR)MmMapIoSpace(addr, ECAM_SEGMENT_SIZE, MmNonCached);
+        if (NULL == devext->EcamBase)
+            continue;
+    }
     return STATUS_SUCCESS;
 }
 void UnmapEcamBase(PSPCDIO_DEVEXT devext)
 {
-    if (NULL != devext->EcamBase[0])
-        MmUnmapIoSpace(devext->EcamBase[0], ECAM_SEGMENT_SIZE);
-    devext->EcamBase[0] = NULL;
+    for (ULONG i = 0; i < MAX_PCI_SEGMENTS; i++)
+    {
+    //don't clean up devext->EcamBase content, leave some debug info... 
+        if (NULL != devext->EcamBase[i])
+            MmUnmapIoSpace(devext->EcamBase[i], ECAM_SEGMENT_SIZE);
+    }
 }
 NTSTATUS SetupAcpiInfo(PSPCDIO_DEVEXT devext)
 {
