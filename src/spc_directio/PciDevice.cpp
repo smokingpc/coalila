@@ -11,6 +11,10 @@ bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
         return false;
     return true;
 }
+bool IsValidIndicatorState(INDICATOR_STATE state)
+{
+    return ((state != INDICATOR_STATE::RESERVED) && (state != INDICATOR_STATE::MAX));
+}
 
 PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR dev, UCHAR func)
 {
@@ -187,8 +191,13 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
     switch(arg->Target)
     {
         case SLOT_CTRL_FIELD::ATT_INDICATOR:      //Attention Indicator   (led)
+            state = arg->u.Indicator;
             if (!pcie->SlotCap.AttentionIndicator)
                 status = STATUS_NOT_SUPPORTED;
+            else if (!IsValidIndicatorState(state))
+            {
+                status = STATUS_INVALID_PARAMETER;
+            }
             else
             {
                 pcie->SlotCtrl.AttentionIndicator = (UINT16)state;
@@ -196,8 +205,13 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
             }
             break;
         case SLOT_CTRL_FIELD::PWR_INDICATOR:      //Power Indicator   (led)
+            state = arg->u.Indicator;
             if (!pcie->SlotCap.PowerIndicator)
                 status = STATUS_NOT_SUPPORTED;
+            else if (!IsValidIndicatorState(state))
+            {
+                status = STATUS_INVALID_PARAMETER;
+            }
             else
             {
                 pcie->SlotCtrl.PowerIndicator = (UINT16)state;
