@@ -6,8 +6,8 @@
 //todo: check segment acpi table
 // https://github.com/KunYi/DumpACPI
 
-NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext);
-void UnmapEcamBase(PSPCDIO_DEVEXT devext);
+//for debugging easier
+PUCHAR FirstEcamBase = NULL;
 
 NTSTATUS EnumAcpiMcfgTable(PSPCDIO_DEVEXT devext)
 {
@@ -54,6 +54,8 @@ NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext)
         devext->EcamBase[i] = (PUCHAR)MmMapIoSpace(addr, ECAM_SEGMENT_SIZE, MmNonCached);
         if (NULL == devext->EcamBase)
             continue;
+        if(NULL == FirstEcamBase)
+            FirstEcamBase = devext->EcamBase[i];
     }
     return STATUS_SUCCESS;
 }

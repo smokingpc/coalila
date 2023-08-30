@@ -46,9 +46,11 @@
 #ifndef PCI_TYPE0_ADDRESSES
 #define PCI_TYPE0_ADDRESSES             6
 #endif //PCI_TYPE0_ADDRESSES
+
 #ifndef PCI_TYPE1_ADDRESSES
 #define PCI_TYPE1_ADDRESSES             2
 #endif //PCI_TYPE1_ADDRESSES
+
 #ifndef PCI_TYPE2_ADDRESSES
 #define PCI_TYPE2_ADDRESSES             5
 #endif //PCI_TYPE2_ADDRESSES
@@ -63,10 +65,7 @@
 //read specified CAPABILITY block which followed after PCIDEV_CONFIG_SPACE
 #define DIO_READ_CAP        (121)
 #define DIO_PCIE_SLOT_CTRL  (140)
-
-//#define DIO_PCIE_ATTEN_IDR  (141)     //Slot Attention Indicator(LED) cmd
-//#define DIO_PCIE_POWER_IDR  (142)     //Slot Power Indicator(LED) cmd
-//#define DIO_PCIE_SLOT_POWER  (143)  //Slot Power Control(turn on/off slot power)
+#define DIO_PCIE_LINK_CTRL  (180)
 
 //following macro can fetch corresponding fields from IOCTL codes
 //DEVICE_TYPE_FROM_CTL_CODE
@@ -79,11 +78,7 @@
 #define IOCTL_READ_PCIHEADER  CTL_CODE(DIO_DEVTYPE, DIO_READ_PCIHEADER, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define IOCTL_READ_CAP      CTL_CODE(DIO_DEVTYPE, DIO_READ_CAP, METHOD_BUFFERED, FILE_READ_ACCESS)
 #define IOCTL_PCIE_SLOT_CTRL    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_SLOT_CTRL, METHOD_BUFFERED, FILE_READ_ACCESS)
-//#define IOCTL_PCIE_ATTEN_IDR    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_ATTEN_IDR, METHOD_BUFFERED, FILE_READ_ACCESS)
-//#define IOCTL_PCIE_POWER_IDR    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_POWER_IDR, METHOD_BUFFERED, FILE_READ_ACCESS)
-//#define IOCTL_PCIE_SLOT_POWER   CTL_CODE(DIO_DEVTYPE, DIO_PCIE_SLOT_POWER, METHOD_BUFFERED, FILE_READ_ACCESS)
-
-//#define IOCTL_WRITE_CAP     CTL_CODE(DIO_DEVTYPE, DIO_WRITE_CAP, METHOD_BUFFERED, FILE_WRITE_ACCESS)
+#define IOCTL_PCIE_LINK_CTRL    CTL_CODE(DIO_DEVTYPE, DIO_PCIE_LINK_CTRL, METHOD_BUFFERED, FILE_READ_ACCESS)
 
 enum class IO_SIZE {
     UNKNOWN = 0,
@@ -123,6 +118,21 @@ enum class SLOT_CTRL_FIELD {
     ATT_INDICATOR = 1,      //Attention Indicator   (led)
     PWR_INDICATOR = 2,      //Power Indicator   (led)
     PWR_CONTROL = 3,        //Slot Power on/off
+};
+
+enum class LINK_CTRL_FIELD {
+    UNKNOWN = 0,
+    ASPM = 1,                   //ASPMControl field.
+    LINK_DISABLE = 3,           //LinkDisable field.
+    RETRAIN_LINK = 4,           //RetrainLink field.
+    //todo: add all fields of PCIE_LINK_CONTROL
+};
+
+enum class ASPM_CTRL_VALUE : UINT16 {
+    DISABLE = 0,
+    L0s = 1,
+    L1 = 2,
+    L0s_AND_L1 = 3,
 };
 
 enum class INDICATOR_STATE : UINT16 {
@@ -176,6 +186,22 @@ typedef struct {
         INDICATOR_STATE Indicator;
     } u;
 }SET_PCIE_SLOT_CONTROL;
+
+typedef struct {
+    USHORT Segment; //0~65535, UEFI defined segment. it is called "Domain" in Linux.
+    UCHAR BusId;    //0~255
+    UCHAR DevId;    //0~32
+    UCHAR FuncId;   //0~7
+
+    LINK_CTRL_FIELD Target;
+    union LINK_CTRL_VALUE
+    {
+        USHORT RawValue;
+        ASPM_CTRL_VALUE Aspm;   //Active State Power Management
+        BOOLEAN LinkDisable;    //default FALSE. TRUE indicates "Disable Link"
+        BOOLEAN Retrain;        //TRUE indicates ReTrain Link now.
+    } u;
+}SET_PCIE_LINK_CONTROL;
 
 #pragma region ======== PCI DEVICE CONFIG and CAPABILITY structures ========
 #pragma pack(1)

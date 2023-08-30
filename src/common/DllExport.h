@@ -48,6 +48,7 @@ enum class LED_STATE {
     OFF = 0,
     ON = 1,
     BLINK = 2,
+    UNKNOWN = 999
 };
 
 EXTERN_C_START
@@ -62,5 +63,6 @@ GRAID_DLLEXPORT DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_i
 GRAID_DLLEXPORT DWORD SetPCIeSlotAttentionIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state);
 GRAID_DLLEXPORT DWORD SetPCIeSlotPowerIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state);
 GRAID_DLLEXPORT DWORD SetPCIeSlotPowerControl(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN onoff);
+GRAID_DLLEXPORT DWORD SetPCIeLinkRetrain(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id);
 EXTERN_C_END
 

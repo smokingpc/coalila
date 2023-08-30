@@ -233,3 +233,46 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
 
     return status;
 }
+NTSTATUS PCIeSetLinkControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+{
+    UNREFERENCED_PARAMETER(out_size);
+    CAutoSpinLock(&devext->Lock);
+    ret_size = 0;
+    if (in_size < sizeof(SET_PCIE_LINK_CONTROL))
+        return STATUS_INVALID_PARAMETER;
+
+    SET_PCIE_LINK_CONTROL* arg = (SET_PCIE_LINK_CONTROL*)buffer;
+    PCI_CAPID cap_id = PCI_CAPID::PCIE;
+    UCHAR bus_id = arg->BusId;
+    UCHAR dev_id = arg->DevId;
+    UCHAR func_id = arg->FuncId;
+    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)FindCapByDevice(
+        devext, cap_id, bus_id, dev_id, func_id);
+    if (NULL == cap)
+        return STATUS_NOT_FOUND;
+
+    NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
+    PCIE_CAP* pcie = (PCIE_CAP*)cap;
+    switch (arg->Target)
+    {
+    case LINK_CTRL_FIELD::ASPM:
+        if (((UINT16)arg->u.Aspm) != (((UINT16)arg->u.Aspm) & pcie->LinkCap.ASPMSupport))
+            status = STATUS_NOT_SUPPORTED;
+        else
+        {
+            pcie->LinkCtrl.ASPMControl = (UINT16)arg->u.Aspm;
+            status = STATUS_SUCCESS;
+        }
+        break;
+    case LINK_CTRL_FIELD::LINK_DISABLE:
+        pcie->LinkCtrl.LinkDisable = arg->u.LinkDisable;
+        status = STATUS_SUCCESS;
+        break;
+    case LINK_CTRL_FIELD::RETRAIN_LINK:
+        pcie->LinkCtrl.RetrainLink = arg->u.Retrain;
+        status = STATUS_SUCCESS;
+        break;
+    }
+
+    return status;
+}

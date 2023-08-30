@@ -122,3 +122,18 @@ DWORD SetPCIeSlotPowerControl(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR 
     error = SendIoctl(IOCTL_PCIE_SLOT_CTRL, &request, sizeof(SET_PCIE_SLOT_CONTROL), NULL, 0, ret_size);
     return error;
 }
+DWORD SetPCIeLinkRetrain(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
+{
+    SET_PCIE_LINK_CONTROL request = {
+        .BusId = bus_id,
+        .DevId = dev_id,
+        .FuncId = func_id,
+        .Target = LINK_CTRL_FIELD::RETRAIN_LINK,
+    };
+    request.u.Retrain = TRUE;
+
+    DWORD error = 0;
+    DWORD ret_size = 0;
+    error = SendIoctl(IOCTL_PCIE_LINK_CTRL, &request, sizeof(SET_PCIE_LINK_CONTROL), NULL, 0, ret_size);
+    return error;
+}
