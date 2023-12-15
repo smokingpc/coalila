@@ -125,6 +125,7 @@ DWORD SetPCIeSlotPowerControl(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR 
 DWORD SetPCIeLinkRetrain(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
 {
     SET_PCIE_LINK_CONTROL request = {
+        .Segment = segment,
         .BusId = bus_id,
         .DevId = dev_id,
         .FuncId = func_id,

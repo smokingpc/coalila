@@ -9,7 +9,7 @@
 //for debugging easier
 PUCHAR FirstEcamBase = NULL;
 
-NTSTATUS EnumAcpiMcfgTable(PSPCDIO_DEVEXT devext)
+NTSTATUS EnumAcpiTables(PSPCDIO_DEVEXT devext)
 {
     NTSTATUS status = STATUS_SUCCESS;
     ULONG buf_size = sizeof(devext->AcpiTableTags);
@@ -27,16 +27,12 @@ NTSTATUS LoadAcpiMcfgTable(PSPCDIO_DEVEXT devext)
     ULONG buf_size = 0;
     ULONG ret_size = 0;
 
-    status = EnumAcpiMcfgTable(devext);
-    if (NT_SUCCESS(status))
-    {
-        buf_size = sizeof(devext->McfgTable);
-        ret_size = 0;
-        status = AuxKlibGetSystemFirmwareTable(
-                    FIRMWARE_ACPI, TABLE_MCFG,
-                    &devext->McfgTable, buf_size, &ret_size);
-        ASSERT(ret_size <= buf_size);
-    }
+    buf_size = sizeof(devext->McfgTable);
+    ret_size = 0;
+    status = AuxKlibGetSystemFirmwareTable(
+                FIRMWARE_ACPI, TABLE_MCFG,
+                &devext->McfgTable, buf_size, &ret_size);
+    ASSERT(ret_size <= buf_size);
 
     return status;
 }
@@ -75,7 +71,7 @@ NTSTATUS SetupAcpiInfo(PSPCDIO_DEVEXT devext)
     if (!NT_SUCCESS(status))
         return status;
 
-    status = EnumAcpiMcfgTable(devext);
+    status = EnumAcpiTables(devext);
     if (!NT_SUCCESS(status))
         return status;
     

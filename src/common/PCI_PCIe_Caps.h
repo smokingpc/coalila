@@ -312,3 +312,11 @@ typedef struct
     UINT16 DevStatus2;
 }PCIE_CAP, * PPCIE_CAP;
 #pragma pack()
+
+//SBDF stands for "Segment Bus Device Function"
+typedef struct _SBDF_LOCATION {
+    USHORT Segment;
+    UCHAR Bus;
+    UCHAR Dev;
+    UCHAR Func;
+}SBDF_LOCATION, *PSBDF_LOCATION;
