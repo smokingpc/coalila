@@ -19,7 +19,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Inf Include="spc_directio.inf">
+    <Inf Include="coalila.inf">
       <Filter>Driver Files</Filter>
     </Inf>
   </ItemGroup>

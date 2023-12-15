@@ -8,7 +8,7 @@ Class=System
 ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
 Provider=%ManufacturerName%
 DriverVer=
-CatalogFile=spc_directio.cat
+CatalogFile=coalila.cat
 PnpLockDown=1
 
 ;This template is supported for OS version 17763 (Windows 10 version 1809) and after.
@@ -20,18 +20,18 @@ DefaultDestDir = 12     ;win2019 and Win10 don't support DestDir 13 for Legacy D
 1 = %DiskName%,,,""
 
 [SourceDisksFiles]
-spc_directio.sys = 1,,
+coalila.sys = 1,,
 
 [DefaultInstall.NT$ARCH$]
 ;[DefaultInstall]
 CopyFiles=DefaultInstall_CopyFiles
 
 [DefaultInstall_CopyFiles]
-spc_directio.sys
+coalila.sys
 
 [DefaultInstall.NT$ARCH$.Services]
 ;[DefaultInstall.Services]
-AddService = spcdio, 2, SpcDirectIo_AddService
+AddService = coalila, 2, SpcDirectIo_AddService
 
 ; -------------- driver install sections
 [SpcDirectIo_AddService]
@@ -39,7 +39,7 @@ DisplayName    = %MyDeviceDesc%
 ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
 StartType      = 3               ; SERVICE_DEMAND_START
 ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
-ServiceBinary  = %12%\spc_directio.sys
+ServiceBinary  = %12%\coalila.sys
 
 [Strings]
 ManufacturerName="Roy Wang (SmokingPC)"
