@@ -44,7 +44,8 @@ NTSTATUS LoadAcpiTables(PSPCDIO_DEVEXT devext)
 NTSTATUS LoadSratEntries(PSPCDIO_DEVEXT devext)
 {
     UINT32 entry_len = 0;
-    UINT32 total_entries_len = devext->SratTable.Header.Length - offsetof(ACPI_SRAT_TABLE, Entries) ;
+    UINT32 total_entries_len = devext->SratTable.Header.Length - 
+                                FIELD_OFFSET(ACPI_SRAT_TABLE, Entries) ;
     PUCHAR start = (PUCHAR)devext->SratTable.Entries;
     PUCHAR ptr = (PUCHAR)devext->SratTable.Entries;
     UINT32 mem_idx = 0, apic_idx=0, x2apic_idx=0;
