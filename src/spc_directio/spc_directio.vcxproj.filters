@@ -71,7 +71,7 @@
     <ClInclude Include="DeviceExtension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ACPI_Structures.h">
+    <ClInclude Include="ACPI_Table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AutoLock.h">

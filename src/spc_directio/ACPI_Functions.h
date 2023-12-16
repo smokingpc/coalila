@@ -37,9 +37,14 @@
 // Enjoy it.
 // ================================================================
 
+#define FIRMWARE_ACPI ((ULONG) 'ACPI')
+#define TABLE_MCFG ((ULONG) 'GFCM')
+#define TABLE_SRAT ((ULONG) 'TARS')
+
 NTSTATUS SetupAcpiInfo(PSPCDIO_DEVEXT devext);
 void TeardownAcpiInfo(PSPCDIO_DEVEXT devext);
 NTSTATUS EnumAcpiTables(PSPCDIO_DEVEXT devext);
-NTSTATUS LoadAcpiMcfgTable(PSPCDIO_DEVEXT devext);
+NTSTATUS LoadAcpiTables(PSPCDIO_DEVEXT devext);
+NTSTATUS LoadSratEntries(PSPCDIO_DEVEXT devext);
 NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext);
 void UnmapEcamBase(PSPCDIO_DEVEXT devext);

@@ -41,7 +41,7 @@
 #include <wdm.h>
 #include <aux_klib.h>
 #include "Constant.h"
-#include "ACPI_Structures.h"
+#include "ACPI_Table.h"
 #include "DeviceExtension.h"
 #include "AutoLock.h"
 #include "ACPI_Functions.h"

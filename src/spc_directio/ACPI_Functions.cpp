@@ -1,8 +1,5 @@
 #include "Precompile.h"
 
-#define FIRMWARE_ACPI ((ULONG) 'ACPI')
-#define TABLE_MCFG ((ULONG) 'GFCM')
-
 //todo: check segment acpi table
 // https://github.com/KunYi/DumpACPI
 
@@ -21,7 +18,7 @@ NTSTATUS EnumAcpiTables(PSPCDIO_DEVEXT devext)
     return status;
 }
 
-NTSTATUS LoadAcpiMcfgTable(PSPCDIO_DEVEXT devext)
+NTSTATUS LoadAcpiTables(PSPCDIO_DEVEXT devext)
 {
     NTSTATUS status = STATUS_SUCCESS;
     ULONG buf_size = 0;
@@ -34,7 +31,51 @@ NTSTATUS LoadAcpiMcfgTable(PSPCDIO_DEVEXT devext)
                 &devext->McfgTable, buf_size, &ret_size);
     ASSERT(ret_size <= buf_size);
 
+    buf_size = sizeof(devext->SratTable);
+    ret_size = 0;
+    status = AuxKlibGetSystemFirmwareTable(
+        FIRMWARE_ACPI, TABLE_SRAT,
+        &devext->SratTable, buf_size, &ret_size);
+    ASSERT(ret_size <= buf_size);
+
     return status;
+}
+
+NTSTATUS LoadSratEntries(PSPCDIO_DEVEXT devext)
+{
+    UINT32 entry_len = 0;
+    UINT32 total_entries_len = devext->SratTable.Header.Length - offsetof(ACPI_SRAT_TABLE, Entries) ;
+    PUCHAR start = (PUCHAR)devext->SratTable.Entries;
+    PUCHAR ptr = (PUCHAR)devext->SratTable.Entries;
+    UINT32 mem_idx = 0, apic_idx=0, x2apic_idx=0;
+
+    while((ptr - start) < total_entries_len)
+    {
+        PACPI_SRAT_ENTRY entry = (PACPI_SRAT_ENTRY)ptr;
+        entry_len = ((PACPI_SRAT_ENTRY)ptr)->Length;
+
+        if(0 == entry_len)
+            break;
+
+        switch(entry->Type)
+        {
+        case SRAT_ENTRY_TYPE::APIC_SAPIC:
+            RtlCopyMemory(&devext->SratLocalApicAffinity[apic_idx], ptr, entry_len);
+            apic_idx++;
+            break;
+        case SRAT_ENTRY_TYPE::MEMORY:
+            RtlCopyMemory(&devext->SratMemoryAffinity[mem_idx], ptr, entry_len);
+            mem_idx++;
+            break;
+        case SRAT_ENTRY_TYPE::X2APIC:
+            RtlCopyMemory(&devext->SratX2ApicAffinity[x2apic_idx], ptr, entry_len);
+            x2apic_idx++;
+            break;
+        }
+        ptr += entry_len;
+    }
+
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS MapEcamBase(PSPCDIO_DEVEXT devext)
@@ -75,11 +116,12 @@ NTSTATUS SetupAcpiInfo(PSPCDIO_DEVEXT devext)
     if (!NT_SUCCESS(status))
         return status;
     
-    status = LoadAcpiMcfgTable(devext);
+    status = LoadAcpiTables(devext);
     if (!NT_SUCCESS(status))
         return status;
 
     MapEcamBase(devext);
+    LoadSratEntries(devext);
 
     return status;
 }

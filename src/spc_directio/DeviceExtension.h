@@ -48,7 +48,10 @@ typedef struct
 
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
     PUCHAR EcamBase[MAX_PCI_SEGMENTS];
-
+    ACPI_SRAT_TABLE SratTable;
+    SRAT_MEMORY_AFFINITY SratMemoryAffinity[DEFAULT_SRAT_ENTRIES];
+    SRAT_LOCAL_APIC_SAPIC_AFFINITY SratLocalApicAffinity[DEFAULT_SRAT_ENTRIES];
+    SRAT_X2APIC_AFFINITY SratX2ApicAffinity[DEFAULT_SRAT_ENTRIES];
     KSPIN_LOCK Lock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;
 
