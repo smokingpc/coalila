@@ -46,16 +46,19 @@ typedef struct
     ACPI_MCFG_TABLE McfgTable;
     ULONG AcpiTableTags[MAX_ACPI_TABLE_TAGS];
 
+    ULONG CpuCount;
+
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
     PUCHAR EcamBase[MAX_PCI_SEGMENTS];
     ACPI_SRAT_TABLE SratTable;
     SRAT_MEMORY_AFFINITY SratMemoryAffinity[DEFAULT_SRAT_ENTRIES];
-    SRAT_LOCAL_APIC_SAPIC_AFFINITY SratLocalApicAffinity[DEFAULT_SRAT_ENTRIES];
-    SRAT_X2APIC_AFFINITY SratX2ApicAffinity[DEFAULT_SRAT_ENTRIES];
+    PSRAT_LOCAL_APIC_AFFINITY SratLocalApicAffinity;
+    PSRAT_X2APIC_AFFINITY SratX2ApicAffinity;
     KSPIN_LOCK Lock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;
 
-PSPCDIO_DEVEXT InitDeviceExtension(PDEVICE_OBJECT device);
+PSPCDIO_DEVEXT SetupDevExt(PDEVICE_OBJECT device);
+void TeardownDevExt(PSPCDIO_DEVEXT devext);
 
 __inline PSPCDIO_DEVEXT GetDevExt(PDEVICE_OBJECT device)
 {

@@ -20,7 +20,7 @@ NTSTATUS CreateDevice(_In_ PDRIVER_OBJECT driver)
 
     device->Flags &= ~DO_DEVICE_INITIALIZING;
     device->Flags |= DO_BUFFERED_IO;
-    devext = InitDeviceExtension(device);
+    devext = SetupDevExt(device);
     status = IoCreateSymbolicLink(&devext->SymbolicName, &devname);
     
     if (!NT_SUCCESS(status))
@@ -47,6 +47,7 @@ void DeleteDevice(_In_ PDEVICE_OBJECT device)
     if(devext->SymLinkOk)
         IoDeleteSymbolicLink(&devext->SymbolicName);
 
+    TeardownDevExt(devext);
     if(NULL != devext->DevObj)
         IoDeleteDevice(device);
 }

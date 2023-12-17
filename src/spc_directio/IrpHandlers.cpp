@@ -76,6 +76,7 @@ NTSTATUS DeviceIoControlHandler(
         break;
     case IOCTL_PCIE_LINK_CTRL:
         //SET_PCIE_LINK_CONTROL
+        status = PCIeSetLinkControl(devext, buffer, in_size, out_size, ret_info);
         break;
     default:
         status = DefaultIoctlHandler(buffer, in_size, out_size, ret_info);
