@@ -217,7 +217,7 @@ typedef struct {
     UINT64 Reserved2;
 
     //should be filled by SRAT_CPU_LOCAL_APIC_SAPIC_AFFINITY + SRAT_MEMORY_AFFINITY + ....etc.
-    UCHAR Entries[PAGE_SIZE * 4];
+    UCHAR Entries[PAGE_SIZE * 16];
 }ACPI_SRAT_TABLE;
 
 #pragma pack()

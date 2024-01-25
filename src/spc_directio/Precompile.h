@@ -38,6 +38,7 @@
 // ================================================================
 
 
+#include <ntddk.h>
 #include <wdm.h>
 #include <aux_klib.h>
 #include "Constant.h"

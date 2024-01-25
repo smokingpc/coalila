@@ -5,6 +5,25 @@ __inline bool IsValidVendorID(PPCI_COMMON_CONFIG cfg)
     //not mapped PCI HEADER so only can read 0xFFFF or 0(invalid value)
     return !(0xffff == cfg->VendorID || 0 == cfg->VendorID);
 }
+__inline ULONG ParsePciCapSize(PCI_CAPID cap_id)
+{
+    //only support PCIE, MSI, MSIX in current stage.
+    switch (cap_id)
+    {
+    case PCI_CAPID::PCIE:
+        return sizeof(PCIE_CAP);
+    case PCI_CAPID::MSI:
+        return sizeof(PCI_MSI_CAP);
+    case PCI_CAPID::MSIX:
+        return sizeof(PCI_MSIX_CAP);
+    }
+
+    return MAXULONG;
+}
+__inline bool IsBufferSizeOkForCap(ULONG buf_size, PCI_CAPID cap_id)
+{
+    return (buf_size >= ParsePciCapSize(cap_id));
+}
 bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
 {
     if(NULL == cap || 0 == cap->CapabilityID || 0xFF == cap->CapabilityID)
@@ -15,7 +34,6 @@ bool IsValidIndicatorState(INDICATOR_STATE state)
 {
     return ((state != INDICATOR_STATE::RESERVED) && (state != INDICATOR_STATE::MAX));
 }
-
 PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR dev, UCHAR func)
 {
     ECAM_OFFSET offset = { 0 };
@@ -50,25 +68,6 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
     if(!IsValidVendorID(cfg))
         return NULL;
     return ret;
-}
-ULONG ParsePciCapSize(PCI_CAPID cap_id)
-{
-    //only support PCIE, MSI, MSIX in current stage.
-    switch(cap_id)
-    {
-        case PCI_CAPID::PCIE:
-            return sizeof(PCIE_CAP);
-        case PCI_CAPID::MSI:
-            return sizeof(PCI_MSI_CAP);
-        case PCI_CAPID::MSIX:
-            return sizeof(PCI_MSIX_CAP);
-    }
-    
-    return MAXULONG;
-}
-bool IsBufferSizeOkForCap(ULONG buf_size, PCI_CAPID cap_id)
-{
-    return (buf_size >= ParsePciCapSize(cap_id));
 }
 PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
 {
