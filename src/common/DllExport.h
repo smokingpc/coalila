@@ -56,7 +56,7 @@ GRAID_DLLEXPORT DWORD DirectIoReadPort(DIRECTIO_READ* request, ULONG* out_data);
 GRAID_DLLEXPORT DWORD DirectIoWritePort(DIRECTIO_WRITE* request);
 GRAID_DLLEXPORT DWORD DirectIoReadAddr(DIRECTIO_READ* request, ULONG_PTR* out_data);
 GRAID_DLLEXPORT DWORD DirectIoWriteAddr(DIRECTIO_WRITE* request);
-GRAID_DLLEXPORT DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP* result);
+GRAID_DLLEXPORT DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_ENHANCED_CAP* result);
 GRAID_DLLEXPORT DWORD ReadMsiCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result);
 GRAID_DLLEXPORT DWORD ReadMsixCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* result);
 GRAID_DLLEXPORT DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER*result);

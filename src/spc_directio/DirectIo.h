@@ -37,8 +37,20 @@
 // Enjoy it.
 // ================================================================
 
-NTSTATUS DirectReadIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG &ret_size);
-NTSTATUS DirectWriteIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-NTSTATUS DirectReadRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-NTSTATUS DirectWriteRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
+NTSTATUS DirectReadIoPort(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG &ret_size);
+NTSTATUS DirectWriteIoPort(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size);
+NTSTATUS DirectReadRegister(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size);
+NTSTATUS DirectWriteRegister(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size);
 

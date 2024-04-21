@@ -3,8 +3,11 @@
 #include <tchar.h>
 #include <windows.h>
 #include <winioctl.h>
+#include "..\common\PCI_EnumAndConsts.h"
+#include "..\common\PCI_Structures.h"
+#include "..\common\PCIe_EnumAndConsts.h"
+#include "..\common\PCIe_Structures.h"
 #include "..\common\IoctlCmd.h"
-#include "..\common\PCI_PCIe_Caps.h"
 #include "..\common\DllExport.h"
 
 void Usage()
@@ -24,7 +27,7 @@ void PrintMsiCap(PCI_MSI_CAP *cap)
     _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
     _tprintf(_T("MSIE=%d, MMC=%d, MME=%d, C64=%d, PVM=%d\n"), 
         cap->MC.MSIE, cap->MC.MMC, cap->MC.MME, cap->MC.C64, cap->MC.PVM);
-    _tprintf(_T("MsgAddr = %llX\n"), cap->MA);
+    _tprintf(_T("MsgAddr = %08X%08X\n"), cap->MA_UP, cap->MA_LOW);
     _tprintf(_T("MD=%X, MMASK=%X, MPEND=%X\n"), cap->MD, cap->MMASK, cap->MPEND);
 }
 

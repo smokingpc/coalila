@@ -17,7 +17,7 @@ INDICATOR_STATE LedStateToIndicatorState(LED_STATE state)
     return INDICATOR_STATE::RESERVED;
 }
 
-DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAP *result)
+DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_ENHANCED_CAP*result)
 {
     READ_PCI_CAP request = {
         .Segment = segment,
@@ -29,7 +29,7 @@ DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI
     
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCIE_CAP), ret_size);
+    error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCIE_ENHANCED_CAP), ret_size);
     return error;
 }
 DWORD ReadMsiCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result)

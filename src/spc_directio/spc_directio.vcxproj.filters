@@ -80,10 +80,22 @@
     <ClInclude Include="..\common\IoctlCmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\PCI_PCIe_Caps.h">
+    <ClInclude Include="..\common\PCIe_Structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCI_Structures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\VERSION.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCI_EnumAndConsts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCIe_EnumAndConsts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

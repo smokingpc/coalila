@@ -46,11 +46,12 @@
 #include "DeviceExtension.h"
 #include "AutoLock.h"
 #include "ACPI_Functions.h"
-#include "..\common\IoctlCmd.h"
 #include "DirectIo.h"   //Direct ReadPort, Direc tWritePort...etc.
 #include "IrpHandlers.h"
-#include "..\common\PCI_PCIe_Caps.h"
+#include "..\common\PCI_EnumAndConsts.h"
+#include "..\common\PCI_Structures.h"
+#include "..\common\PCIe_EnumAndConsts.h"
+#include "..\common\PCIe_Structures.h"
+#include "..\common\IoctlCmd.h"
 #include "PciDevice.h"     //Scan PCI devices, Read PCI Cap....etc.
 #include "Utils.h"
-
-

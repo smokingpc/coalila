@@ -51,16 +51,16 @@ NTSTATUS DeviceIoControlHandler(
     switch(ioctl)
     {
     case IOCTL_READ_PORT:
-        status = DirectReadIoPort(buffer, in_size, out_size, ret_info);
+        status = DirectReadIoPort(devext, buffer, in_size, out_size, ret_info);
         break;
     case IOCTL_WRITE_PORT:
-        status = DirectWriteIoPort(buffer, in_size, out_size, ret_info);
+        status = DirectWriteIoPort(devext, buffer, in_size, out_size, ret_info);
         break;
     case IOCTL_READ_ADDR:
-        status = DirectReadRegister(buffer, in_size, out_size, ret_info);
+        status = DirectReadRegister(devext, buffer, in_size, out_size, ret_info);
         break;
     case IOCTL_WRITE_ADDR:
-        status = DirectWriteRegister(buffer, in_size, out_size, ret_info);
+        status = DirectWriteRegister(devext, buffer, in_size, out_size, ret_info);
         break;
     case IOCTL_READ_PCIHEADER:
         status = ReadPciCfgHeader(devext, buffer, in_size, out_size, ret_info);
@@ -87,6 +87,8 @@ NTSTATUS DeviceIoControlHandler(
     //if this request comes from usermode app, we should return status.
     //usermode request will not retrieve Irp->IoStatus.Status, 
     //it only check return of this dispatch function.
+    if(!NT_SUCCESS(status))
+        ret_info = 0;
     Irp->IoStatus.Status = status;
     Irp->IoStatus.Information = ret_info;
 

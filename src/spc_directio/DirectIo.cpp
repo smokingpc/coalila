@@ -1,9 +1,13 @@
 #include "Precompile.h"
 
-NTSTATUS DirectReadIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS DirectReadIoPort(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;
     ULONG out_data = 0;
+    CQueuedSpinLock lock(&devext->DirectIoLock);
 
     if(in_size < sizeof(DIRECTIO_READ))
     {
@@ -38,10 +42,14 @@ NTSTATUS DirectReadIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& re
         RtlCopyMemory(buffer, &out_data, ret_size);
     return status;
 }
-NTSTATUS DirectWriteIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS DirectWriteIoPort(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;
     UNREFERENCED_PARAMETER(out_size);
+    CQueuedSpinLock lock(&devext->DirectIoLock);
 
     if (in_size < sizeof(DIRECTIO_WRITE))
     {
@@ -68,10 +76,14 @@ NTSTATUS DirectWriteIoPort(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& r
 
     return status;
 }
-NTSTATUS DirectReadRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS DirectReadRegister(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;
     ULONG64 out_data = 0;
+    CQueuedSpinLock lock(&devext->DirectIoLock);
 
     if (in_size < sizeof(DIRECTIO_READ))
     {
@@ -111,10 +123,14 @@ NTSTATUS DirectReadRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& 
         RtlCopyMemory(buffer, &out_data, ret_size);
     return status;
 }
-NTSTATUS DirectWriteRegister(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS DirectWriteRegister(
+    PSPCDIO_DEVEXT devext,
+    PVOID buffer, ULONG in_size,
+    ULONG out_size, ULONG& ret_size)
 {
     NTSTATUS status = STATUS_SUCCESS;
     UNREFERENCED_PARAMETER(out_size);
+    CQueuedSpinLock lock(&devext->DirectIoLock);
 
     if (in_size < sizeof(DIRECTIO_WRITE))
     {

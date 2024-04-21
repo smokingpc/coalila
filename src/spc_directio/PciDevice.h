@@ -80,9 +80,29 @@ typedef union _ECAM_ADDR {
 } ECAM_ADDR, * PECAM_ADDR;
 #endif
 #endif
-NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-NTSTATUS ReadPciCap(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-NTSTATUS PCIeSetLinkControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size);
-PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func);
-PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR dev, UCHAR func);
+NTSTATUS ReadPciCfgHeader(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size);
+NTSTATUS ReadPciCap(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size);
+NTSTATUS PCIeSetSlotControl(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size);
+NTSTATUS PCIeSetLinkControl(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size);
+PUCHAR GetPciCfgSpace(
+    PSPCDIO_DEVEXT devext, 
+    UCHAR bus, UCHAR dev, UCHAR func);
+
+#if 0
+PUCHAR GetEcamCfgAddr(
+    PSPCDIO_DEVEXT devext, 
+    USHORT segment, 
+    UCHAR bus, UCHAR dev, UCHAR func);
+#endif

@@ -24,7 +24,8 @@ PSPCDIO_DEVEXT SetupDevExt(PDEVICE_OBJECT device)
 
     RtlInitUnicodeString(&devext->DevName, DEVICE_NAME);
     RtlInitUnicodeString(&devext->SymbolicName, SYMLINK_NAME);
-    KeInitializeSpinLock(&devext->Lock);
+    KeInitializeSpinLock(&devext->PciCfgLock);
+    KeInitializeSpinLock(&devext->DirectIoLock);
     return devext;
 }
 

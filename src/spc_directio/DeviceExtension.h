@@ -54,7 +54,8 @@ typedef struct
     SRAT_MEMORY_AFFINITY SratMemoryAffinity[DEFAULT_SRAT_ENTRIES];
     PSRAT_LOCAL_APIC_AFFINITY SratLocalApicAffinity;
     PSRAT_X2APIC_AFFINITY SratX2ApicAffinity;
-    KSPIN_LOCK Lock;
+    KSPIN_LOCK PciCfgLock;
+    KSPIN_LOCK DirectIoLock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;
 
 PSPCDIO_DEVEXT SetupDevExt(PDEVICE_OBJECT device);

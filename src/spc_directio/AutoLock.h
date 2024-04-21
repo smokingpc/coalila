@@ -39,12 +39,22 @@
 
 
 //Generic SpinLock
-class CAutoSpinLock
+class CSpinLock
 {
 public:
-    CAutoSpinLock(KSPIN_LOCK* lock);
-    ~CAutoSpinLock();
+    CSpinLock(KSPIN_LOCK* lock);
+    ~CSpinLock();
 private:
     KSPIN_LOCK* Lock = NULL;
     KIRQL OldIrql = PASSIVE_LEVEL;
+};
+
+class CQueuedSpinLock
+{
+public:
+    CQueuedSpinLock(KSPIN_LOCK* lock);
+    ~CQueuedSpinLock();
+private:
+    KSPIN_LOCK* Lock = NULL;
+    KLOCK_QUEUE_HANDLE Handle;
 };

@@ -39,63 +39,6 @@
 
 #pragma pack(1)
 
-typedef struct _PCI_CAP_HEADER {
-    UCHAR   CapabilityID;
-    UCHAR   Next;
-} PCI_CAP_HEADER, * PPCI_CAP_HEADER;
-
-typedef struct _PCI_MSI_CAP
-{
-    PCI_CAP_HEADER Header;
-    struct {
-        UINT16 MSIE : 1;        //MSI Enable. device will use INTx pins if set 0 here.
-        UINT16 MMC : 3;         //Multiple Message Capable. Indicates the number of messages the controller "wants" to assert.
-        UINT16 MME : 3;         //Multiple Message Enable. How many message the soft want controller assert. vendor will imp this field as ReadOnly if doesn't support multi-msi.
-        UINT16 C64 : 1;         //64 Bit Address Capable. NVMe device should set 1 here.
-        UINT16 PVM : 1;         //Per-Vector Masking Capable. indicates this device support PVM or not.
-        UINT16 RESERVED : 7;
-    }MC;            //Message Signaled Interrupt Message Control
-
-    union
-    {
-        struct
-        {
-            struct {
-                UINT32 RESERVED : 2;
-                UINT32 ADDR : 30;       //Low 30 bits of system specificed message address. always DWORD aligned.
-            }LOWER;            //Message Signaled Interrupt Message Address
-            UINT32 UPPER;      //Message Signaled Interrupt Upper Address
-        }MSGADDR;
-        UINT64 MA;      //Message Signaled Interrupt Address(64 bits)
-    };
-
-    UINT32 MD;            //Message Signaled Interrupt Message Data
-    UINT32 MMASK;         //Message Signaled Interrupt Mask Bits (Optional). each bit can mask associated message.(by id)
-    UINT32 MPEND;         //Message Signaled Interrupt Pending Bits (Optional) each bit indicates has pending msg(by id)
-}PCI_MSI_CAP, * PPCI_MSI_CAP;
-
-typedef struct _PCI_MSIX_CAP {
-    PCI_CAP_HEADER Header;
-    struct {
-        UINT16 TS : 11;         //Table Size. how many MSI-X message this device support?
-        UINT16 RESERVED : 3;
-        UINT16 FM : 1;          //Function Mask. Block MSI-X function if set 1.
-        UINT16 MXE : 1;         //MSI-X Enable. If MXE==1 and MSIE==0, this device use MSIX and block INTx pin
-    }MXC;           //MSI-X Message Control
-
-    struct {                    //MSIX table
-        UINT32 TBIR : 3;        //Table BIR. refer to NVMe spec 1.3 , section 2.4.3
-        UINT32 TO : 29;         //Table Offset since BusData begin address.  refer to NVMe spec 1.3 , section 2.4.3
-    }MTAB;          //MSI-X Table Offset / Table BIR
-
-    struct {                     //PBA is Pending Bit of interrupt array
-        UINT32 PBIR : 3;        //PBA BIR.  refer to NVMe spec 1.3 , section 2.4.4
-        UINT32 PBAO : 29;       //PBA Offset since BusData begin address.  refer to NVMe spec 1.3 , section 2.4.4
-    }MPBA;          //MSI-X PBA Offset / PBA BIR
-
-
-}PCI_MSIX_CAP, * PPCI_MSIX_CAP;
-
 typedef struct {
     UINT16 Version : 4;         //PCIe cap structure version (0x02)
     UINT16 DevicePortType : 4;  //Device/Port Type, 0==PCIe endpoint, 1==Legacy PCIe endpoint, ...etc.
@@ -189,6 +132,7 @@ typedef struct {
     USHORT LinkAutoBandwidth : 1;       //Link Autonomous Bandwidth status
 } PCIE_LINK_STATUS;
 
+//PCI_EXPRESS_SLOT_CONTROL_REGISTER in ntddk.h
 typedef struct {
     UINT32 AttentionButtom : 1;
     UINT32 PowerConotroller : 1;
@@ -204,23 +148,23 @@ typedef struct {
     UINT32 PhysicalSlotNumber : 13;
 }PCIE_SLOT_CAPABILITY;
 
+//PCI_EXPRESS_SLOT_CONTROL_REGISTER in ntddk.h
 typedef struct {
-    UINT16 AttentionButtonPressed : 1;
-    UINT16 PowerFaultDetected : 1;
-    UINT16 MRL_SensorChanged : 1;
-    UINT16 PresenceDetectChanged : 1;
-    UINT16 CommandCompletedInterrupt : 1;
-    UINT16 HotPlugInterrupt : 1;
-    UINT16 AttentionIndicator : 2;
-    UINT16 PowerIndicator : 2;
-    UINT16 PowerControl : 1;
-    UINT16 EletromechanicalInterLock : 1;
-    UINT16 DataLinkLayerStateChanged : 1;
-    UINT16 AutoSlotPowerLimitDisable : 1;
-    UINT16 InBandPDDisable : 1;
-    UINT16 Reserved : 1;
+    USHORT AttentionButtonEnable : 1;
+    USHORT PowerFaultDetectEnable : 1;
+    USHORT MRLSensorEnable : 1;
+    USHORT PresenceDetectEnable : 1;
+    USHORT CommandCompletedEnable : 1;
+    USHORT HotPlugInterruptEnable : 1;
+    USHORT AttentionIndicatorControl : 2;  // EXPRESS_INDICATOR_STATE
+    USHORT PowerIndicatorControl : 2;      // EXPRESS_INDICATOR_STATE
+    USHORT PowerControllerControl : 1;     // EXPRESS_POWER_STATE
+    USHORT ElectromechanicalLockControl : 1;
+    USHORT DataLinkStateChangeEnable : 1;
+    USHORT Rsvd : 3;
 }PCIE_SLOT_CONTROL;
 
+//PCI_EXPRESS_SLOT_STATUS_REGISTER in ntddk.h
 typedef struct {
     UINT16 AttentionButton : 1;
     UINT16 PowerFault : 1;
@@ -234,6 +178,7 @@ typedef struct {
     UINT16 Reserved : 7;
 }PCIE_SLOT_STATUS;
 
+//PCI_EXPRESS_ROOT_CONTROL_REGISTER in ntddk.h
 typedef struct {
     UINT16 SystemErrorOnCorrectableError : 1;
     UINT16 SystemErrorOnNonFatalError : 1;
@@ -243,11 +188,13 @@ typedef struct {
     UINT16 Reserved : 11;
 }PCIE_ROOT_CONTROL;
 
+//PCI_EXPRESS_ROOT_CAPABILITIES_REGISTER in ntddk.h
 typedef struct {
     UINT16 CRS_SoftwareVisibility : 1;
     UINT16 Reserved : 15;
 }PCIE_ROOT_CAPABILITY;
 
+//PCI_EXPRESS_ROOT_STATUS_REGISTER in ntddk.h
 typedef struct {
     UINT32 PME_RequesterId : 16;
     UINT32 PME_Status : 1;
@@ -255,36 +202,25 @@ typedef struct {
     UINT32 Reserved : 14;
 }PCIE_ROOT_STATUS;
 
+//PCI_EXPRESS_DEVICE_CAPABILITIES_2_REGISTER in ntddk.h
 typedef struct {
-    UINT32 CompletionTimeoutRanges : 4;
-    UINT32 CompletionTimeoutDisable : 1;
-    UINT32 ARI_Forward : 1;
-    UINT32 AtomicOpRouting : 1;
-    UINT32 AtomicOp32BitCompleter : 1;
-    UINT32 AtomicOp64BitCompleter : 1;
-    UINT32 CAS128BitCompleter : 1;
-    UINT32 NoROEnabled_PR_PR_Parsing : 1;
-    UINT32 LTR_Mechanism : 1;
-    UINT32 TPH_Completer : 2;
-    UINT32 LNSystemCLS : 2;
-    UINT32 TagCompleter10Bit : 1;
-    UINT32 TagRequester10Bit : 1;
-    UINT32 OBFF : 2;
-    UINT32 ExtendedFmtField : 1;
-    UINT32 End2End_TLP_Prefix : 1;
-    UINT32 MaxEnd2EndTLPPrefixes : 2;
-    UINT32 EmergencyPowerReduction : 2;
-    UINT32 EmergPowerReductInitRequired : 1;    //Emergency Power Reduction Initialization Required
-    UINT32 Reserved : 4;
-    UINT32 FRS : 1;
+    ULONG CompletionTimeoutRangesSupported : 4;
+    ULONG CompletionTimeoutDisableSupported : 1;
+    ULONG AriForwardingSupported : 1;
+    ULONG AtomicOpRoutingSupported : 1;
+    ULONG AtomicOpCompleterSupported32Bit : 1;
+    ULONG AtomicOpCompleterSupported64Bit : 1;
+    ULONG CASCompleterSupported128Bit : 1;
+    ULONG NoROEnabledPRPRPassing : 1;
+    ULONG LTRMechanismSupported : 1;
+    ULONG TPHCompleterSupported : 2;
+    ULONG Rsvd : 4;
+    ULONG OBFFSupported : 2;
+    ULONG ExtendedFmtFieldSuported : 1;
+    ULONG EndEndTLPPrefixSupported : 1;
+    ULONG MaxEndEndTLPPrefixes : 2;
+    ULONG Rsvd2 : 8;
 }PCIE_DEVICE_CAPABILITY2;
-
-//typedef struct {
-//
-//}PCIE_DEVICE_CONTROL2;
-//
-//typedef struct {
-//}PCIE_DEVICE_STATUS2;
 
 typedef struct 
 {
@@ -300,23 +236,12 @@ typedef struct
     PCIE_SLOT_CONTROL SlotCtrl;
     PCIE_SLOT_STATUS SlotStatus;
     PCIE_ROOT_CONTROL RootCtrl;
-    //PCIE_ROOT_CAPABILITY RootCap;
-    //PCIE_ROOT_STATUS RootStatus;
-    //PCIE_DEVICE_CAPABILITY2 DevCap2;
+    PCIE_ROOT_CAPABILITY RootCap;
+    PCIE_ROOT_STATUS RootStatus;
+    PCIE_DEVICE_CAPABILITY2 DevCap2;
     //PCIE_DEVICE_CONTROL2 DevCtrl2;
     //PCIE_DEVICE_STATUS2 DevStatus2;
-    UINT16 RootCap;
-    UINT32 RootStatus;
-    UINT32 DevCap2;
     UINT16 DevCtrl2;
     UINT16 DevStatus2;
-}PCIE_CAP, * PPCIE_CAP;
+}PCIE_ENHANCED_CAP, * PPCIE_ENHANCED_CAP;
 #pragma pack()
-
-//SBDF stands for "Segment Bus Device Function"
-typedef struct _SBDF_LOCATION {
-    USHORT Segment;
-    UCHAR Bus;
-    UCHAR Dev;
-    UCHAR Func;
-}SBDF_LOCATION, *PSBDF_LOCATION;

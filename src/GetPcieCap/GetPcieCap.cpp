@@ -1,12 +1,13 @@
 // GetPcieCap.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
-
 #include <tchar.h>
 #include <windows.h>
 #include <winioctl.h>
+#include "..\common\PCI_EnumAndConsts.h"
+#include "..\common\PCI_Structures.h"
+#include "..\common\PCIe_EnumAndConsts.h"
+#include "..\common\PCIe_Structures.h"
 #include "..\common\IoctlCmd.h"
-#include "..\common\PCI_PCIe_Caps.h"
 #include "..\common\DllExport.h"
 
 void Usage()
@@ -20,7 +21,7 @@ void Usage()
     _tprintf(_T("  GetMsiXCap.exe 0 2 31 2\n\n"));
 }
 
-void PrintPCIeCap(PCIE_CAP* cap)
+void PrintPCIeCap(PCIE_ENHANCED_CAP* cap)
 {
     _tprintf(_T("[PCIe CAP]\n"));
     _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
@@ -85,15 +86,13 @@ void PrintPCIeCap(PCIE_CAP* cap)
 
     _tprintf(_T("cap->SlotCtrl=>\n"));
     _tprintf(_T("AttentionButtonPressed=%d, PowerFaultDetected=%d, MRL_SensorChanged=%d,\n"),
-        cap->SlotCtrl.AttentionButtonPressed, cap->SlotCtrl.PowerFaultDetected, cap->SlotCtrl.MRL_SensorChanged);
+        cap->SlotCtrl.AttentionButtonEnable, cap->SlotCtrl.PowerFaultDetectEnable, cap->SlotCtrl.MRLSensorEnable);
     _tprintf(_T("PresenceDetectChanged=%d, CommandCompletedInterrupt=%d, HotPlugInterrupt=%d,\n"),
-        cap->SlotCtrl.PresenceDetectChanged, cap->SlotCtrl.CommandCompletedInterrupt, cap->SlotCtrl.HotPlugInterrupt);
+        cap->SlotCtrl.PresenceDetectEnable, cap->SlotCtrl.CommandCompletedEnable, cap->SlotCtrl.HotPlugInterruptEnable);
     _tprintf(_T("AttentionIndicator=%d, PowerIndicator=%d, PowerControl=%d,\n"),
-        cap->SlotCtrl.AttentionIndicator, cap->SlotCtrl.PowerIndicator, cap->SlotCtrl.PowerControl);
-    _tprintf(_T("EletromechanicalInterLock=%d, DataLinkLayerStateChanged=%d, AutoSlotPowerLimitDisable=%d,n"),
-        cap->SlotCtrl.EletromechanicalInterLock, cap->SlotCtrl.DataLinkLayerStateChanged, cap->SlotCtrl.AutoSlotPowerLimitDisable);
-    _tprintf(_T("InBandPDDisable=%d\n\n"),
-        cap->SlotCtrl.InBandPDDisable);
+        cap->SlotCtrl.AttentionIndicatorControl, cap->SlotCtrl.PowerIndicatorControl, cap->SlotCtrl.PowerControllerControl);
+    _tprintf(_T("EletromechanicalInterLock=%d, DataLinkLayerStateChanged=%d,\n"),
+        cap->SlotCtrl.ElectromechanicalLockControl, cap->SlotCtrl.DataLinkStateChangeEnable);
 
     _tprintf(_T("cap->SlotStatus=>\n"));
     _tprintf(_T("AttentionButton=%d, PowerFault=%d, MRL_SensorChanged=%d,\n"),
@@ -103,9 +102,9 @@ void PrintPCIeCap(PCIE_CAP* cap)
     _tprintf(_T("PresenceDetect=%d, EletromechanicalInterLock=%d, DataLinkLayerStateChanged=%d\n\n"),
         cap->SlotStatus.PresenceDetect, cap->SlotStatus.EletromechanicalInterLock, cap->SlotStatus.DataLinkLayerStateChanged);
 
-    _tprintf(_T("RootCap=0x%04X\n"), cap->RootCap);
-    _tprintf(_T("RootStatus=0x%08X\n"), cap->RootStatus);
-    _tprintf(_T("DevCap2=0x%08X\n"), cap->DevCap2);
+    _tprintf(_T("RootCap.CRS_SoftwareVisibility=%d\n"), cap->RootCap.CRS_SoftwareVisibility);
+    _tprintf(_T("RootStatus=0x%08X\n"), *((UINT32*)&cap->RootStatus));
+    _tprintf(_T("DevCap2=0x%08X\n"), *((UINT32*)&cap->DevCap2));
     _tprintf(_T("DevCtrl2=0x%04X\n"), cap->DevCtrl2);
     _tprintf(_T("DevStatus2=0x%04X\n"), cap->DevStatus2);
 }
@@ -119,7 +118,7 @@ int _tmain(int argc, _TCHAR* argv[])
         return -1;
     }
 
-    PCIE_CAP cap = { 0 };
+    PCIE_ENHANCED_CAP cap = { 0 };
     DWORD error = ERROR_SUCCESS;
     int domain = _tstoi(argv[1]);
     int bus_id = _tstoi(argv[2]);

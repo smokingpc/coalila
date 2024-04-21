@@ -5,6 +5,7 @@
 
 //for debugging easier
 PUCHAR FirstEcamBase = NULL;
+PPCIE_ENHANCED_CAP PcieDebug = NULL;
 ECAM_OFFSET DevOffset = { 0 };
 ACPI_SRAT_TABLE SratTable = {0};
 SRAT_MEMORY_AFFINITY SratMemoryAffinity[DEFAULT_SRAT_ENTRIES];

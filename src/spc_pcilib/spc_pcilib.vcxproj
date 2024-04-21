@@ -244,15 +244,21 @@
   <ItemGroup>
     <ClInclude Include="..\common\DllExport.h" />
     <ClInclude Include="..\common\IoctlCmd.h" />
-    <ClInclude Include="..\common\PCI_PCIe_Caps.h" />
+    <ClInclude Include="..\common\PCIe_Structures.h" />
+    <ClInclude Include="..\common\PCI_Structures.h" />
+    <ClInclude Include="..\common\VERSION.h" />
     <ClInclude Include="InternalFunction.h" />
     <ClInclude Include="Precompile.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectIo.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="InternalFunction.cpp" />
     <ClCompile Include="PCI_and_PCIe.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

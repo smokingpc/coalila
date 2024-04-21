@@ -1,17 +1,17 @@
 #include "Precompile.h"
 
-__inline bool IsValidVendorID(PPCI_COMMON_CONFIG cfg)
+static __inline bool IsValidVendorID(PPCI_COMMON_CONFIG cfg)
 {
     //not mapped PCI HEADER so only can read 0xFFFF or 0(invalid value)
     return !(0xffff == cfg->VendorID || 0 == cfg->VendorID);
 }
-__inline ULONG ParsePciCapSize(PCI_CAPID cap_id)
+static __inline ULONG ParsePciCapSize(PCI_CAPID cap_id)
 {
     //only support PCIE, MSI, MSIX in current stage.
     switch (cap_id)
     {
     case PCI_CAPID::PCIE:
-        return sizeof(PCIE_CAP);
+        return sizeof(PCIE_ENHANCED_CAP);
     case PCI_CAPID::MSI:
         return sizeof(PCI_MSI_CAP);
     case PCI_CAPID::MSIX:
@@ -20,20 +20,21 @@ __inline ULONG ParsePciCapSize(PCI_CAPID cap_id)
 
     return MAXULONG;
 }
-__inline bool IsBufferSizeOkForCap(ULONG buf_size, PCI_CAPID cap_id)
+static __inline bool IsBufferSizeOkForCap(ULONG buf_size, PCI_CAPID cap_id)
 {
     return (buf_size >= ParsePciCapSize(cap_id));
 }
-bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
+static bool IsValidCap(PPCI_CAPABILITIES_HEADER cap)
 {
     if(NULL == cap || 0 == cap->CapabilityID || 0xFF == cap->CapabilityID)
         return false;
     return true;
 }
-bool IsValidIndicatorState(INDICATOR_STATE state)
+static bool IsValidIndicatorState(INDICATOR_STATE state)
 {
     return ((state != INDICATOR_STATE::RESERVED) && (state != INDICATOR_STATE::MAX));
 }
+#if 0
 PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR dev, UCHAR func)
 {
     ECAM_OFFSET offset = { 0 };
@@ -50,10 +51,12 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR de
         return NULL;
     return ret;
 }
-
+#endif
 //this function generates PCI_COMMON_HEADER address in ECAM space.
 //please refer to PCIe spec: Enhanced Configuration Access Mechanism.
-PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
+PUCHAR GetPciCfgSpace(
+    PSPCDIO_DEVEXT devext, 
+    UCHAR bus, UCHAR dev, UCHAR func)
 {
     ECAM_OFFSET offset = { 0 };
     if (NULL == devext->EcamBase)
@@ -69,9 +72,12 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, UCHAR bus, UCHAR dev, UCHAR func)
         return NULL;
     return ret;
 }
-PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
+PUCHAR FindCapByDevice(
+    PSPCDIO_DEVEXT devext, 
+    PCI_CAPID cap_id, 
+    UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
 {
-    PUCHAR header = GetEcamCfgAddr(devext, bus_id, dev_id, func_id);
+    PUCHAR header = GetPciCfgSpace(devext, bus_id, dev_id, func_id);
     if(NULL == header)
         return NULL;
 
@@ -92,27 +98,21 @@ PUCHAR FindCapByDevice(PSPCDIO_DEVEXT devext, PCI_CAPID cap_id, UCHAR bus_id, UC
 
     return (PUCHAR)cap;
 }
-NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS ReadPciCfgHeader(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size)
 {
     UNREFERENCED_PARAMETER(devext);
     UNREFERENCED_PARAMETER(buffer);
-    UNREFERENCED_PARAMETER(out_size);
-
-    if (in_size < sizeof(READ_PCI_CFGHEADER))
-    {
-        ret_size = sizeof(READ_PCI_CFGHEADER);
-        return STATUS_INVALID_PARAMETER;
-    }
-    if (out_size < sizeof(PCIDEV_CFG_HEADER))
-    {
-        ret_size = sizeof(PCIDEV_CFG_HEADER);
-        return STATUS_INVALID_PARAMETER;
-    }
 
     if (NULL == devext->EcamBase)
-    {
-        ret_size = 0;
         return STATUS_ACPI_NOT_INITIALIZED;
+    if (NULL == buffer || 
+        (in_size < sizeof(READ_PCI_CFGHEADER)) ||
+        (out_size < sizeof(PCIDEV_CFG_HEADER)))
+    {
+        return STATUS_INVALID_PARAMETER;
     }
 
     READ_PCI_CFGHEADER* arg = (READ_PCI_CFGHEADER*)buffer;
@@ -120,7 +120,8 @@ NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, UL
     UCHAR dev_id = arg->DevId;
     UCHAR func_id = arg->FuncId;
 
-    PCIDEV_CFG_HEADER *pcicfg = (PCIDEV_CFG_HEADER*)GetEcamCfgAddr(devext,bus_id, dev_id, func_id);
+    PCIDEV_CFG_HEADER *pcicfg = (PCIDEV_CFG_HEADER*)
+            GetPciCfgSpace(devext,bus_id, dev_id, func_id);
     if(NULL == pcicfg)
         return STATUS_NOT_FOUND;
     ret_size = sizeof(PCIDEV_CFG_HEADER);
@@ -128,7 +129,10 @@ NTSTATUS ReadPciCfgHeader(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, UL
 
     return STATUS_SUCCESS;
 }
-NTSTATUS ReadPciCap(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS ReadPciCap(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size)
 {
     if (in_size < sizeof(READ_PCI_CAP))
     {
@@ -166,10 +170,13 @@ NTSTATUS ReadPciCap(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG ou
 
     return STATUS_SUCCESS;
 }
-NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS PCIeSetSlotControl(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size)
 {
     UNREFERENCED_PARAMETER(out_size);
-    CAutoSpinLock(&devext->Lock);
+    CSpinLock lock(&devext->PciCfgLock);
     ret_size = 0;
     if (in_size < sizeof(SET_PCIE_SLOT_CONTROL))
         return STATUS_INVALID_PARAMETER;
@@ -185,7 +192,7 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
         return STATUS_NOT_FOUND;
 
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
-    PCIE_CAP *pcie = (PCIE_CAP*)cap;
+    PCIE_ENHANCED_CAP *pcie = (PCIE_ENHANCED_CAP*)cap;
     INDICATOR_STATE state = INDICATOR_STATE::RESERVED;
     switch(arg->Target)
     {
@@ -199,7 +206,7 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
             }
             else
             {
-                pcie->SlotCtrl.AttentionIndicator = (UINT16)state;
+                pcie->SlotCtrl.AttentionIndicatorControl = (UINT16)state;
                 status = STATUS_SUCCESS;
             }
             break;
@@ -213,7 +220,7 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
             }
             else
             {
-                pcie->SlotCtrl.PowerIndicator = (UINT16)state;
+                pcie->SlotCtrl.PowerIndicatorControl = (UINT16)state;
                 status = STATUS_SUCCESS;
             }
             break;
@@ -224,7 +231,7 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
             {
             //refer to PCIe spec v5.0
             //In PowerControl, 0 indicates "ON".
-                pcie->SlotCtrl.PowerControl = !arg->u.OnOff;
+                pcie->SlotCtrl.PowerControllerControl = !arg->u.OnOff;
                 status = STATUS_SUCCESS;
             }
             break;
@@ -232,10 +239,13 @@ NTSTATUS PCIeSetSlotControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
 
     return status;
 }
-NTSTATUS PCIeSetLinkControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+NTSTATUS PCIeSetLinkControl(
+    PSPCDIO_DEVEXT devext, 
+    PVOID buffer, ULONG in_size, 
+    ULONG out_size, ULONG& ret_size)
 {
     UNREFERENCED_PARAMETER(out_size);
-    CAutoSpinLock(&devext->Lock);
+    CSpinLock lock(&devext->PciCfgLock);
     ret_size = 0;
     if (in_size < sizeof(SET_PCIE_LINK_CONTROL))
         return STATUS_INVALID_PARAMETER;
@@ -251,7 +261,7 @@ NTSTATUS PCIeSetLinkControl(PSPCDIO_DEVEXT devext, PVOID buffer, ULONG in_size, 
         return STATUS_NOT_FOUND;
 
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
-    PCIE_CAP* pcie = (PCIE_CAP*)cap;
+    PCIE_ENHANCED_CAP* pcie = (PCIE_ENHANCED_CAP*)cap;
     switch (arg->Target)
     {
     case LINK_CTRL_FIELD::ASPM:

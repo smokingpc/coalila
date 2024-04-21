@@ -340,7 +340,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\IoctlCmd.h" />
-    <ClInclude Include="..\common\PCI_PCIe_Caps.h" />
+    <ClInclude Include="..\common\PCIe_EnumAndConsts.h" />
+    <ClInclude Include="..\common\PCIe_Structures.h" />
+    <ClInclude Include="..\common\PCI_Structures.h" />
+    <ClInclude Include="..\common\PCI_EnumAndConsts.h" />
+    <ClInclude Include="..\common\VERSION.h" />
     <ClInclude Include="ACPI_Functions.h" />
     <ClInclude Include="ACPI_Table.h" />
     <ClInclude Include="AutoLock.h" />
