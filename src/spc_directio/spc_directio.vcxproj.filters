@@ -17,6 +17,9 @@
       <UniqueIdentifier>{8E41214B-6785-4CFE-B992-037D68949A14}</UniqueIdentifier>
       <Extensions>inf;inv;inx;mof;mc;</Extensions>
     </Filter>
+    <Filter Include="Common Header">
+      <UniqueIdentifier>{acf2cfc9-5e62-4013-963a-05ee116b0e99}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="coalila.inf">
@@ -77,26 +80,29 @@
     <ClInclude Include="AutoLock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\IoctlCmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\PCIe_Structures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\PCI_Structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common\VERSION.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common\PCI_EnumAndConsts.h">
-      <Filter>Header Files</Filter>
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCI_Structures.h">
+      <Filter>Common Header</Filter>
     </ClInclude>
     <ClInclude Include="..\common\PCIe_EnumAndConsts.h">
-      <Filter>Header Files</Filter>
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCIe_Structures.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\IoctlCmd.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\MSIX.h">
+      <Filter>Common Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

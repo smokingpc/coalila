@@ -21,7 +21,7 @@ void Usage()
     _tprintf(_T("  GetMsiXCap.exe 0 2 31 2\n\n"));
 }
 
-void PrintPCIeCap(PCIE_ENHANCED_CAP* cap)
+void PrintPCIeCap(PCIE_CAPABILITIES* cap)
 {
     _tprintf(_T("[PCIe CAP]\n"));
     _tprintf(_T("CapID=%X, Next=%X\n"), cap->Header.CapabilityID, cap->Header.Next);
@@ -118,7 +118,7 @@ int _tmain(int argc, _TCHAR* argv[])
         return -1;
     }
 
-    PCIE_ENHANCED_CAP cap = { 0 };
+    PCIE_CAPABILITIES cap = { 0 };
     DWORD error = ERROR_SUCCESS;
     int domain = _tstoi(argv[1]);
     int bus_id = _tstoi(argv[2]);

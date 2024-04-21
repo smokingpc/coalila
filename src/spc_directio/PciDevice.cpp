@@ -11,7 +11,7 @@ static __inline ULONG ParsePciCapSize(PCI_CAPID cap_id)
     switch (cap_id)
     {
     case PCI_CAPID::PCIE:
-        return sizeof(PCIE_ENHANCED_CAP);
+        return sizeof(PCIE_CAPABILITIES);
     case PCI_CAPID::MSI:
         return sizeof(PCI_MSI_CAP);
     case PCI_CAPID::MSIX:
@@ -192,7 +192,7 @@ NTSTATUS PCIeSetSlotControl(
         return STATUS_NOT_FOUND;
 
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
-    PCIE_ENHANCED_CAP *pcie = (PCIE_ENHANCED_CAP*)cap;
+    PCIE_CAPABILITIES *pcie = (PCIE_CAPABILITIES*)cap;
     INDICATOR_STATE state = INDICATOR_STATE::RESERVED;
     switch(arg->Target)
     {
@@ -261,7 +261,7 @@ NTSTATUS PCIeSetLinkControl(
         return STATUS_NOT_FOUND;
 
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
-    PCIE_ENHANCED_CAP* pcie = (PCIE_ENHANCED_CAP*)cap;
+    PCIE_CAPABILITIES* pcie = (PCIE_CAPABILITIES*)cap;
     switch (arg->Target)
     {
     case LINK_CTRL_FIELD::ASPM:

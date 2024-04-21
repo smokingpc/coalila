@@ -52,6 +52,9 @@
 #include "..\common\PCI_Structures.h"
 #include "..\common\PCIe_EnumAndConsts.h"
 #include "..\common\PCIe_Structures.h"
+#include "..\common\MSIX.h"
 #include "..\common\IoctlCmd.h"
+
 #include "PciDevice.h"     //Scan PCI devices, Read PCI Cap....etc.
 #include "Utils.h"
+

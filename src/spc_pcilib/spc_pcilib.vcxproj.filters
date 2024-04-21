@@ -13,31 +13,40 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Common Header">
+      <UniqueIdentifier>{ee9e850b-4d4f-42ba-9385-8c4057505472}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Precompile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\DllExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="InternalFunction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\IoctlCmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\PCIe_Structures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\PCI_Structures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\VERSION.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCIe_Structures.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCI_Structures.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\IoctlCmd.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\DllExport.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCI_EnumAndConsts.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\PCIe_EnumAndConsts.h">
+      <Filter>Common Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\VERSION.h">
+      <Filter>Common Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

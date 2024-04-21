@@ -41,12 +41,12 @@
 #pragma pack(1)
 
 //following structure definition copied from struct PCI_COMMON_CONFIG in wdm.h.
-typedef struct _PCI_CAP_HEADER {
+struct PCI_CAP_HEADER {
     UCHAR   CapabilityID;
     UCHAR   Next;
-} PCI_CAP_HEADER, * PPCI_CAP_HEADER;
+};
 
-typedef struct _PCI_MSI_CAP
+struct PCI_MSI_CAP
 {
     PCI_CAP_HEADER Header;
     struct {
@@ -65,9 +65,9 @@ typedef struct _PCI_MSI_CAP
     UINT32 MD;            //Message Signaled Interrupt Message Data
     UINT32 MMASK;         //Message Signaled Interrupt Mask Bits (Optional). each bit can mask associated message.(by id)
     UINT32 MPEND;         //Message Signaled Interrupt Pending Bits (Optional) each bit indicates has pending msg(by id)
-}PCI_MSI_CAP, * PPCI_MSI_CAP;
+};
 
-typedef struct _PCI_MSIX_CAP {
+struct PCI_MSIX_CAP {
     PCI_CAP_HEADER Header;
     struct {
         UINT16 TS : 11;         //Table Size. how many MSI-X message this device support?
@@ -85,17 +85,142 @@ typedef struct _PCI_MSIX_CAP {
         UINT32 PBIR : 3;        //PBA BIR.  refer to NVMe spec 1.3 , section 2.4.4
         UINT32 PBAO : 29;       //PBA Offset since BusData begin address.  refer to NVMe spec 1.3 , section 2.4.4
     }MPBA;          //MSI-X PBA Offset / PBA BIR
+};
 
+//PMC ==> Power Management Capabilities.
+//PCI_PMC in wdm.h
+struct PCI_PM_CAP {
+    UCHAR       Version : 3;
+    UCHAR       PMEClock : 1;
+    UCHAR       Rsvd1 : 1;
+    UCHAR       DeviceSpecificInitialization : 1;
+    UCHAR       Rsvd2 : 2;
+    struct _PM_SUPPORT {
+        UCHAR   Rsvd2 : 1;
+        UCHAR   D1 : 1;
+        UCHAR   D2 : 1;
+        UCHAR   PMED0 : 1;
+        UCHAR   PMED1 : 1;
+        UCHAR   PMED2 : 1;
+        UCHAR   PMED3Hot : 1;
+        UCHAR   PMED3Cold : 1;
+    } Support;
+};// PCI_PMC, * PPCI_PMC;
 
-}PCI_MSIX_CAP, * PPCI_MSIX_CAP;
+//PMCSR ==> Power Management Control / Status
+//PCI_PMCSR in wdm.h
+struct PCI_PM_CSR {
+    USHORT      PowerState : 2;
+    USHORT      Rsvd1 : 1;
+    USHORT      NoSoftReset : 1;
+    USHORT      Rsvd2 : 4;
+    USHORT      PMEEnable : 1;
+    USHORT      DataSelect : 4;
+    USHORT      DataScale : 2;
+    USHORT      PMEStatus : 1;
+};// PCI_PMCSR, * PPCI_PMCSR;
 
-typedef struct _PCI_HEADER_TYPE {
+//PCI_PM_B2BSE ==> PCI-PCI Bridge Support Extensions
+//PCI_PMCSR_BSE in wdm.h
+struct PCI_PM_B2BSE {
+    UCHAR       Rsvd1 : 6;
+    UCHAR       D3HotSupportsStopClock : 1;       // B2_B3#
+    UCHAR       BusPowerClockControlEnabled : 1;  // BPCC_EN
+};
+
+//PCI_ADVANCED_FEATURES_CAPABILITY in ntddk.h
+//it only permit when conventional PCI function integrated into a RootComplex.
+struct PCI_ADV_FEATURE_CAP{
+    PCI_CAP_HEADER Header;
+    UCHAR Length;
+
+    union {
+        struct {
+            UCHAR FunctionLevelResetSupported : 1;
+            UCHAR TransactionsPendingSupported : 1;
+            UCHAR Rsvd : 6;
+        } u;
+
+        UCHAR AsUCHAR;
+    } Capabilities;
+
+    union {
+        struct {
+            UCHAR InitiateFunctionLevelReset : 1;
+            UCHAR Rsvd : 7;
+        } u;
+
+        UCHAR AsUCHAR;
+    } Control;
+
+    union {
+        struct {
+            UCHAR TransactionsPending : 1;
+            UCHAR Rsvd : 7;
+        } u;
+
+        UCHAR AsUCHAR;
+    } Status;
+};
+
+//POWMGT ==> Power Management
+//PCI_PM_CAPABILITY in wdm.h
+struct PCI_POWER_MGT_CAP {
+
+    PCI_CAP_HEADER Header;
+
+    //
+    // Power Management Capabilities (Offset = 2)
+    //
+
+    union {
+        PCI_PM_CAP         PowMgrCap;
+        USHORT          AsUSHORT;
+    } PMCAP;
+
+    //
+    // Power Management Control/Status (Offset = 4)
+    //
+
+    union {
+        PCI_PM_CSR       ControlStatus;
+        USHORT          AsUSHORT;
+    } PMCSR;
+
+    //
+    // PMCSR PCI-PCI Bridge Support Extensions
+    //
+
+    union {
+        PCI_PM_B2BSE   BridgeSupport;
+        UCHAR           AsUCHAR;
+    } PMCSR_BSE;
+
+    //
+    // Optional read only 8 bit Data register.  Contents controlled by
+    // DataSelect and DataScale in ControlStatus.
+    //
+
+    UCHAR   Data;
+
+} ;
+
+// PCI to PCI Bridge Subsystem ID Capability
+//PCI_SUBSYSTEM_IDS_CAPABILITY in ntddk.h
+struct PCI_SUBSYS_IDS_CAP{
+    PCI_CAP_HEADER Header;
+    USHORT Reserved;
+    USHORT SubVendorID;
+    USHORT SubSystemID;
+};
+
+struct PCI_HEADER_TYPE {
     UCHAR Type : 7;
     UCHAR IsMultiFunc : 1;
-}PCI_HEADER_TYPE, * PPCI_HEADER_TYPE;
+};
 
 //for pci-device
-typedef struct _PCI_HEADER_TYPE_0 {
+struct PCI_HEADER_TYPE_0 {
     ULONG   BaseAddresses[PCI_TYPE0_ADDRESSES];
     ULONG   CIS;
     USHORT  SubVendorID;
@@ -108,10 +233,10 @@ typedef struct _PCI_HEADER_TYPE_0 {
     UCHAR   InterruptPin;       // (ro)
     UCHAR   MinimumGrant;       // (ro)
     UCHAR   MaximumLatency;     // (ro)
-}PCI_HEADER_TYPE_0, * PPCI_HEADER_TYPE_0;
+};
 
 //for pci-bridge
-typedef struct _PCI_HEADER_TYPE_1 {
+struct PCI_HEADER_TYPE_1 {
     ULONG   BaseAddresses[PCI_TYPE1_ADDRESSES];
     UCHAR   PrimaryBus;     //parent bus id
     UCHAR   SecondaryBus;   //child bus id
@@ -134,7 +259,7 @@ typedef struct _PCI_HEADER_TYPE_1 {
     UCHAR   InterruptLine;
     UCHAR   InterruptPin;
     USHORT  BridgeControl;
-} PCI_HEADER_TYPE_1, * PPCI_HEADER_TYPE_1;
+};
 
 typedef struct {
     USHORT  VendorID;                   // (ro)
@@ -158,8 +283,7 @@ typedef struct {
         //NOTE: In WDK deifnition , there is a Type2 structure for Cardbus device here.
         //According Cardbus is almost extinct, so I skip type2 definition...
 
-    } DUMMYSTRUCTNAME;
-    UCHAR   Device[192];
+    } u;
 }PCIDEV_CFG_HEADER, * PPCIDEV_CFG_HEADER;
 
 typedef struct _PCIDEV_CONFIG_SPACE : PCIDEV_CFG_HEADER

@@ -244,7 +244,9 @@
   <ItemGroup>
     <ClInclude Include="..\common\DllExport.h" />
     <ClInclude Include="..\common\IoctlCmd.h" />
+    <ClInclude Include="..\common\PCIe_EnumAndConsts.h" />
     <ClInclude Include="..\common\PCIe_Structures.h" />
+    <ClInclude Include="..\common\PCI_EnumAndConsts.h" />
     <ClInclude Include="..\common\PCI_Structures.h" />
     <ClInclude Include="..\common\VERSION.h" />
     <ClInclude Include="InternalFunction.h" />

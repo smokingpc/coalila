@@ -340,6 +340,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\IoctlCmd.h" />
+    <ClInclude Include="..\common\MSIX.h" />
     <ClInclude Include="..\common\PCIe_EnumAndConsts.h" />
     <ClInclude Include="..\common\PCIe_Structures.h" />
     <ClInclude Include="..\common\PCI_Structures.h" />
