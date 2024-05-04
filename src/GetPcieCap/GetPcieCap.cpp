@@ -28,31 +28,31 @@ void PrintPCIeCap(PCIE_CAPABILITIES* cap)
 
     _tprintf(_T("cap->PCIeCap=>\n"));
     _tprintf(_T("Version=%d, PortType=%d, SlotImplement=%d, InterruptMsgNumber=0x%04X\n\n"), 
-        cap->PCIeCap.Version, cap->PCIeCap.DevicePortType, cap->PCIeCap.SlotImplement, cap->PCIeCap.InterruptMsgNumber);
+        cap->PCIeCap.CapabilityVersion, cap->PCIeCap.DeviceType, cap->PCIeCap.SlotImplemented, cap->PCIeCap.InterruptMessageNumber);
 
     _tprintf(_T("cap->DevCap=>\n"));
     _tprintf(_T("MaxPayloadSupport=%d, PhantomFunctionSupport=%d, ExtendTagFieldSupport=%d,\n"),
-        cap->DevCap.MaxPayloadSupport, cap->DevCap.PhantomFunctionSupport, cap->DevCap.ExtendTagFieldSupport);
+        cap->DevCap.MaxPayloadSizeSupported, cap->DevCap.PhantomFunctionsSupported, cap->DevCap.ExtendedTagSupported);
     _tprintf(_T("EndpointL0AcceptLatency=%d, EndpointL1AcceptLatency=%d, RoleBasedErrorReport=%d,\n"),
-        cap->DevCap.EndpointL0AcceptLatency, cap->DevCap.EndpointL1AcceptLatency, cap->DevCap.RoleBasedErrorReport);
+        cap->DevCap.L0sAcceptableLatency, cap->DevCap.L1AcceptableLatency, cap->DevCap.RoleBasedErrorReporting);
     _tprintf(_T("ErrCorSubclassCap=%d, SlotPowerLimitValue=%d, SlotPowerLimitScale=%d, FuncLevelResetCap=%d\n\n"),
-        cap->DevCap.ErrCorSubclassCap, cap->DevCap.SlotPowerLimitValue, cap->DevCap.SlotPowerLimitScale, cap->DevCap.FuncLevelResetCap);
+        cap->DevCap.ErrCorSubclassCap, cap->DevCap.CapturedSlotPowerLimit, cap->DevCap.CapturedSlotPowerLimitScale, cap->DevCap.FunctionLevelResetCapability);
 
     _tprintf(_T("cap->DevCtrl=>\n"));
     _tprintf(_T("CorrectableErrorReport=%d, NonFatalErrorReport=%d, FatalErrorReport=%d,\n"),
-        cap->DevCtrl.CorrectableErrorReport, cap->DevCtrl.NonFatalErrorReport, cap->DevCtrl.FatalErrorReport);
+        cap->DevCtrl.u1.CorrectableErrorEnable, cap->DevCtrl.u1.NonFatalErrorEnable, cap->DevCtrl.u1.FatalErrorEnable);
     _tprintf(_T("UnsupportRequestReport=%d, RelaxedOrdering=%d, MaxPayloadSize=%d,\n"),
-        cap->DevCtrl.UnsupportRequestReport, cap->DevCtrl.RelaxedOrdering, cap->DevCtrl.MaxPayloadSize);
+        cap->DevCtrl.u1.UnsupportedRequestErrorEnable, cap->DevCtrl.u1.EnableRelaxedOrder, cap->DevCtrl.u1.MaxPayloadSize);
     _tprintf(_T("ExtendTagField=%d, PhantomFunction=%d, AuxPowerPM=%d,\n"),
-        cap->DevCtrl.ExtendTagField, cap->DevCtrl.PhantomFunction, cap->DevCtrl.AuxPowerPM);
+        cap->DevCtrl.u1.ExtendedTagEnable, cap->DevCtrl.u1.PhantomFunctionsEnable, cap->DevCtrl.u1.AuxPowerEnable);
     _tprintf(_T("NoSnoop=%d, MaxReadRequestSize=%d, BCR_IFLR=%d\n\n"),
-        cap->DevCtrl.NoSnoop, cap->DevCtrl.MaxReadRequestSize, cap->DevCtrl.BCR_IFLR);
+        cap->DevCtrl.u1.NoSnoopEnable, cap->DevCtrl.u1.MaxReadRequestSize, cap->DevCtrl.u1.BCR_IFLR);
 
     _tprintf(_T("cap->DevStatus=>\n"));
     _tprintf(_T("CorrectableError=%d, NonFatalError=%d, FatalError=%d, UnsupportedRequest=%d,\n"),
-        cap->DevStatus.CorrectableError, cap->DevStatus.NonFatalError, cap->DevStatus.FatalError, cap->DevStatus.UnsupportedRequest);
+        cap->DevStatus.CorrectableErrorDetected, cap->DevStatus.NonFatalErrorDetected, cap->DevStatus.FatalErrorDetected, cap->DevStatus.UnsupportedRequestDetected);
     _tprintf(_T("AuxPower=%d, TransactionPending=%d, EmergencyPowerReduction=%d\n\n"),
-        cap->DevStatus.AuxPower, cap->DevStatus.TransactionPending, cap->DevStatus.EmergencyPowerReduction);
+        cap->DevStatus.AuxPowerDetected, cap->DevStatus.TransactionsPending, cap->DevStatus.EmergencyPowerReduction);
 
     _tprintf(_T("cap->LinkCap=>\n"));
     _tprintf(_T("MaxLinkSpeed=%d, MaxLinkWidth=%d, ASPMSupport=%d, L0ExitLatency=%d,\n"),
@@ -105,7 +105,7 @@ void PrintPCIeCap(PCIE_CAPABILITIES* cap)
     _tprintf(_T("RootCap.CRS_SoftwareVisibility=%d\n"), cap->RootCap.CRS_SoftwareVisibility);
     _tprintf(_T("RootStatus=0x%08X\n"), *((UINT32*)&cap->RootStatus));
     _tprintf(_T("DevCap2=0x%08X\n"), *((UINT32*)&cap->DevCap2));
-    _tprintf(_T("DevCtrl2=0x%04X\n"), cap->DevCtrl2);
+    _tprintf(_T("DevCtrl2=0x%04X\n"), *((USHORT*)&cap->DevCtrl2));
     _tprintf(_T("DevStatus2=0x%04X\n"), cap->DevStatus2);
 }
 

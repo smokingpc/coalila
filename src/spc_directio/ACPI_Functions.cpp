@@ -145,7 +145,7 @@ NTSTATUS SetupAcpiInfo(PSPCDIO_DEVEXT devext)
     status = AuxKlibInitialize();
     if (!NT_SUCCESS(status))
         return status;
-
+    DbgBreakPoint();
     status = EnumAcpiTables(devext);
     if (!NT_SUCCESS(status))
         return status;

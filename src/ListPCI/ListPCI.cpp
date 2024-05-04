@@ -35,7 +35,7 @@ void PrintType0Header(PCI_HEADER_TYPE_0 *type0)
     _tprintf(_T("\n"));
 }
 
-void PrintType1Header(_PCI_HEADER_TYPE_1 *type1)
+void PrintType1Header(PCI_HEADER_TYPE_1* type1)
 {
     _tprintf(_T("    BaseAddress[0]=%08X, BaseAddress[1]=%08X\n"),
         type1->BaseAddresses[0], type1->BaseAddresses[1]);
@@ -80,10 +80,10 @@ void PrintPciHeader(USHORT domain, UCHAR bus, UCHAR dev, UCHAR func, PCIDEV_CFG_
     switch(header->HeaderType.Type)
     {
     case 0:
-        PrintType0Header(&header->Type0);
+        PrintType0Header(&header->u.Type0);
         break;
     case 1:
-        PrintType1Header(&header->Type1);
+        PrintType1Header(&header->u.Type1);
         break;
     default:
         _tprintf(_T("    Unknown HeaderType, skip to print its content.\n"));
