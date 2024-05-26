@@ -30,9 +30,6 @@
     <ClCompile Include="DriverEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ACPI_Functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IrpHandlers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,9 +53,6 @@
     <ClInclude Include="Precompile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ACPI_Functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IrpHandlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -72,9 +66,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DeviceExtension.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ACPI_Table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AutoLock.h">

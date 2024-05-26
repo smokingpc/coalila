@@ -37,30 +37,52 @@
 // Enjoy it.
 // ================================================================
 
-typedef struct
+typedef struct _SRAT_INFO {
+    PACPI_SRAT SratTable = NULL;        //SRAT == System Resource Affinity Table
+    ULONG SratCount = 0;
+    PACPI_SRAT_ENTRY SratEntries = NULL;
+    //todo: operator []
+
+    NTSTATUS Setup();
+    void Teardown();
+}SRAT_INFO, *PSRAT_INFO;
+
+typedef struct _MCFG_INFO {
+    PMCFG_TABLE McfgTable;
+    ULONG McfgCount;
+    PMCFG_TABLE_ENTRY McfgEntries;
+
+    //todo: operator []
+    NTSTATUS Setup();
+    void Teardown();
+}MCFG_INFO, * PMCFG_INFO;
+
+typedef struct 
 {
     PDEVICE_OBJECT  DevObj;
     UNICODE_STRING  DevName;
     BOOLEAN SymLinkOk;
     UNICODE_STRING  SymbolicName;
-    ACPI_MCFG_TABLE McfgTable;
-    ULONG AcpiTableTags[MAX_ACPI_TABLE_TAGS];
-
+    ULONG *AcpiTableTags;
     ULONG CpuCount;
 
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
     PUCHAR EcamBase[MAX_PCI_SEGMENTS];
-    ACPI_SRAT_TABLE SratTable;
-    SRAT_MEMORY_AFFINITY SratMemoryAffinity[DEFAULT_SRAT_ENTRIES];
-    PSRAT_LOCAL_APIC_AFFINITY SratLocalApicAffinity;
-    PSRAT_X2APIC_AFFINITY SratX2ApicAffinity;
+    SRAT_INFO SratInfo;
+    MCFG_INFO McfgInfo;
+
     KSPIN_LOCK PciCfgLock;
     KSPIN_LOCK DirectIoLock;
 } SPCDIO_DEVEXT, * PSPCDIO_DEVEXT;
 
 PSPCDIO_DEVEXT SetupDevExt(PDEVICE_OBJECT device);
 void TeardownDevExt(PSPCDIO_DEVEXT devext);
+PVOID GetPciSpaceBySegment(PSPCDIO_DEVEXT devext, USHORT segment);
 
+__inline NTSTATUS InitAcpiLib()
+{
+    return AuxKlibInitialize();
+}
 __inline PSPCDIO_DEVEXT GetDevExt(PDEVICE_OBJECT device)
 {
     return (PSPCDIO_DEVEXT)device->DeviceExtension;

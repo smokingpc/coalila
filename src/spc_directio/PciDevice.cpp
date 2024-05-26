@@ -54,19 +54,14 @@ PUCHAR GetEcamCfgAddr(PSPCDIO_DEVEXT devext, USHORT segment, UCHAR bus, UCHAR de
 #endif
 //this function generates PCI_COMMON_HEADER address in ECAM space.
 //please refer to PCIe spec: Enhanced Configuration Access Mechanism.
-PUCHAR GetPciCfgSpace(
-    PSPCDIO_DEVEXT devext, 
-    UCHAR bus, UCHAR dev, UCHAR func)
+static PUCHAR GetPciCfgSpace(PVOID seg_base, UCHAR bus, UCHAR dev, UCHAR func)
 {
     ECAM_OFFSET offset = { 0 };
-    if (NULL == devext->EcamBase)
-        return NULL;
-
     offset.u.Bus = bus;
     offset.u.Dev = dev;
     offset.u.Func = func;
 
-    PUCHAR ret = devext->EcamBase[0] + offset.AsAddr;
+    PUCHAR ret = ((PUCHAR)seg_base) + offset.AsAddr;
     PPCI_COMMON_CONFIG cfg = (PPCI_COMMON_CONFIG) ret;
     if(!IsValidVendorID(cfg))
         return NULL;
@@ -75,9 +70,13 @@ PUCHAR GetPciCfgSpace(
 PUCHAR FindCapByDevice(
     PSPCDIO_DEVEXT devext, 
     PCI_CAPID cap_id, 
-    UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
+    USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id)
 {
-    PUCHAR header = GetPciCfgSpace(devext, bus_id, dev_id, func_id);
+    PVOID seg_base = GetPciSpaceBySegment(devext, segment);
+    if(NULL == seg_base)
+        return NULL;
+
+    PUCHAR header = GetPciCfgSpace(seg_base, bus_id, dev_id, func_id);
     if(NULL == header)
         return NULL;
 
@@ -119,11 +118,16 @@ NTSTATUS ReadPciCfgHeader(
     UCHAR bus_id = arg->BusId;
     UCHAR dev_id = arg->DevId;
     UCHAR func_id = arg->FuncId;
-
-    PCIDEV_CFG_HEADER *pcicfg = (PCIDEV_CFG_HEADER*)
-            GetPciCfgSpace(devext,bus_id, dev_id, func_id);
-    if(NULL == pcicfg)
+    USHORT segment = arg->Segment;
+    PVOID seg_base = GetPciSpaceBySegment(devext, segment);
+    if (NULL == seg_base)
         return STATUS_NOT_FOUND;
+
+    PCIDEV_CFG_HEADER* pcicfg = (PCIDEV_CFG_HEADER*)
+            GetPciCfgSpace(seg_base, bus_id, dev_id, func_id);
+    if (NULL == pcicfg)
+        return STATUS_NOT_FOUND;
+
     ret_size = sizeof(PCIDEV_CFG_HEADER);
     RtlCopyMemory(buffer, pcicfg, ret_size);
 
@@ -157,8 +161,10 @@ NTSTATUS ReadPciCap(
     UCHAR bus_id = arg->BusId;
     UCHAR dev_id = arg->DevId;
     UCHAR func_id = arg->FuncId;
-    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)FindCapByDevice(
-                                        devext, cap_id, bus_id, dev_id, func_id);
+    USHORT segment = arg->Segment;
+    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)
+                FindCapByDevice(devext, cap_id, segment, 
+                                    bus_id, dev_id, func_id);
     if(NULL == cap)
     {
         ret_size = 0;
@@ -186,19 +192,21 @@ NTSTATUS PCIeSetSlotControl(
     UCHAR bus_id = arg->BusId;
     UCHAR dev_id = arg->DevId;
     UCHAR func_id = arg->FuncId;
-    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)FindCapByDevice(
-        devext, cap_id, bus_id, dev_id, func_id);
+    USHORT segment = arg->Segment;
+    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)
+        FindCapByDevice(devext, cap_id, segment,
+            bus_id, dev_id, func_id);
     if (NULL == cap)
         return STATUS_NOT_FOUND;
 
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
-    PCIE_CAPABILITIES *pcie = (PCIE_CAPABILITIES*)cap;
+    PPCI_EXPRESS_CAPABILITY pcie = (PPCI_EXPRESS_CAPABILITY)cap;
     INDICATOR_STATE state = INDICATOR_STATE::RESERVED;
     switch(arg->Target)
     {
         case SLOT_CTRL_FIELD::ATT_INDICATOR:      //Attention Indicator   (led)
             state = arg->u.Indicator;
-            if (!pcie->SlotCap.AttentionIndicator)
+            if (!pcie->SlotCapabilities.AttentionIndicatorPresent)
                 status = STATUS_NOT_SUPPORTED;
             else if (!IsValidIndicatorState(state))
             {
@@ -206,13 +214,13 @@ NTSTATUS PCIeSetSlotControl(
             }
             else
             {
-                pcie->SlotCtrl.AttentionIndicatorControl = (UINT16)state;
+                pcie->SlotControl.AttentionIndicatorControl = (UINT16)state;
                 status = STATUS_SUCCESS;
             }
             break;
         case SLOT_CTRL_FIELD::PWR_INDICATOR:      //Power Indicator   (led)
             state = arg->u.Indicator;
-            if (!pcie->SlotCap.PowerIndicator)
+            if (!pcie->SlotCapabilities.PowerIndicatorPresent)
                 status = STATUS_NOT_SUPPORTED;
             else if (!IsValidIndicatorState(state))
             {
@@ -220,18 +228,18 @@ NTSTATUS PCIeSetSlotControl(
             }
             else
             {
-                pcie->SlotCtrl.PowerIndicatorControl = (UINT16)state;
+                pcie->SlotControl.PowerIndicatorControl = (UINT16)state;
                 status = STATUS_SUCCESS;
             }
             break;
         case SLOT_CTRL_FIELD::PWR_CONTROL:        //Slot Power on/off
-            if (!pcie->SlotCap.PowerConotroller)
+            if (!pcie->SlotCapabilities.PowerControllerPresent)
                 status = STATUS_NOT_SUPPORTED;
             else
             {
             //refer to PCIe spec v5.0
             //In PowerControl, 0 indicates "ON".
-                pcie->SlotCtrl.PowerControllerControl = !arg->u.OnOff;
+                pcie->SlotControl.PowerControllerControl = !arg->u.OnOff;
                 status = STATUS_SUCCESS;
             }
             break;
@@ -255,30 +263,26 @@ NTSTATUS PCIeSetLinkControl(
     UCHAR bus_id = arg->BusId;
     UCHAR dev_id = arg->DevId;
     UCHAR func_id = arg->FuncId;
-    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)FindCapByDevice(
-        devext, cap_id, bus_id, dev_id, func_id);
+    USHORT segment = arg->Segment;
+    PPCI_CAPABILITIES_HEADER cap = (PPCI_CAPABILITIES_HEADER)
+        FindCapByDevice(devext, cap_id, segment,
+            bus_id, dev_id, func_id);
     if (NULL == cap)
         return STATUS_NOT_FOUND;
 
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
-    PCIE_CAPABILITIES* pcie = (PCIE_CAPABILITIES*)cap;
+    PPCI_EXPRESS_CAPABILITY pcie = (PPCI_EXPRESS_CAPABILITY)cap;
     switch (arg->Target)
     {
     case LINK_CTRL_FIELD::ASPM:
-        if (((UINT16)arg->u.Aspm) != (((UINT16)arg->u.Aspm) & pcie->LinkCap.ASPMSupport))
-            status = STATUS_NOT_SUPPORTED;
-        else
-        {
-            pcie->LinkCtrl.ASPMControl = (UINT16)arg->u.Aspm;
-            status = STATUS_SUCCESS;
-        }
+        status = STATUS_NOT_IMPLEMENTED;
         break;
     case LINK_CTRL_FIELD::LINK_DISABLE:
-        pcie->LinkCtrl.LinkDisable = arg->u.LinkDisable;
+        pcie->LinkControl.LinkDisable = arg->u.LinkDisable;
         status = STATUS_SUCCESS;
         break;
     case LINK_CTRL_FIELD::RETRAIN_LINK:
-        pcie->LinkCtrl.RetrainLink = arg->u.Retrain;
+        pcie->LinkControl.RetrainLink = arg->u.Retrain;
         status = STATUS_SUCCESS;
         break;
     }

@@ -329,7 +329,6 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ACPI_Functions.cpp" />
     <ClCompile Include="AutoLock.cpp" />
     <ClCompile Include="DeviceExtension.cpp" />
     <ClCompile Include="DirectIo.cpp" />
@@ -346,8 +345,6 @@
     <ClInclude Include="..\common\PCI_Structures.h" />
     <ClInclude Include="..\common\PCI_EnumAndConsts.h" />
     <ClInclude Include="..\common\VERSION.h" />
-    <ClInclude Include="ACPI_Functions.h" />
-    <ClInclude Include="ACPI_Table.h" />
     <ClInclude Include="AutoLock.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="DeviceExtension.h" />

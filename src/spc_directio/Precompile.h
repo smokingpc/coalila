@@ -41,11 +41,10 @@
 #include <ntddk.h>
 #include <wdm.h>
 #include <aux_klib.h>
+#include <acpitabl.h>
 #include "Constant.h"
-#include "ACPI_Table.h"
 #include "DeviceExtension.h"
 #include "AutoLock.h"
-#include "ACPI_Functions.h"
 #include "DirectIo.h"   //Direct ReadPort, Direc tWritePort...etc.
 #include "IrpHandlers.h"
 #include "..\common\PCI_EnumAndConsts.h"
