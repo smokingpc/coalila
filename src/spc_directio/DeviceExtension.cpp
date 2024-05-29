@@ -108,7 +108,7 @@ NTSTATUS _MCFG_INFO::Setup()
         //traverse all entries to determine MCFG Entries Count.
         this->McfgCount = 
             (this->McfgTable->Header.Length - sizeof(DESCRIPTION_HEADER)) / sizeof(MCFG_TABLE_ENTRY);
-        this->McfgEntries = (PMCFG_TABLE_ENTRY)(this->McfgTable + 1);
+        this->McfgEntries = this->McfgTable->TableEntry;
     }
     else
     {
