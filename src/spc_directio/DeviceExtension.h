@@ -68,6 +68,7 @@ typedef struct
 
     //Mapped SystemVA of "PCIe Enhanced Configuration Access Mechanism" BaseAddress
     PUCHAR EcamBase[MAX_PCI_SEGMENTS];
+    ULONG EcamCount;
     SRAT_INFO SratInfo;
     MCFG_INFO McfgInfo;
 

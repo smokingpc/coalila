@@ -168,6 +168,7 @@ void MapEcamBase(PSPCDIO_DEVEXT devext)
         addr.QuadPart = devext->McfgInfo.McfgEntries[i].BaseAddress;
         devext->EcamBase[i] = (PUCHAR)
             MmMapIoSpace(addr, ECAM_SEGMENT_SIZE, MmNonCached);
+        devext->EcamCount++;
     }
 }
 void UnmapEcamBase(PSPCDIO_DEVEXT devext)
@@ -184,10 +185,7 @@ void UnmapEcamBase(PSPCDIO_DEVEXT devext)
 PSPCDIO_DEVEXT SetupDevExt(PDEVICE_OBJECT device)
 {
     PSPCDIO_DEVEXT devext = GetDevExt(device);
-    ULONG size = 0;
-
-    size = sizeof(SPCDIO_DEVEXT);
-    RtlZeroMemory(devext, size);
+    RtlZeroMemory(devext, sizeof(SPCDIO_DEVEXT));
 
     devext->DevObj = device;
     devext->SymLinkOk = FALSE;
