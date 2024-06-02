@@ -284,9 +284,9 @@ typedef struct {
         //According Cardbus is almost extinct, so I skip type2 definition...
 
     } u;
-}PCIDEV_CFG_HEADER, * PPCIDEV_CFG_HEADER;
+}PCIDEV_COMMON_CONFIG, * PPCIDEV_COMMON_CONFIG;
 
-typedef struct _PCIDEV_CONFIG_SPACE : PCIDEV_CFG_HEADER
+typedef struct _PCIDEV_CONFIG_SPACE : PCIDEV_COMMON_CONFIG
 {
     UCHAR DeviceSpecific[192];
 }PCIDEV_CONFIG_SPACE, * PPCIDEV_CONFIG_SPACE;

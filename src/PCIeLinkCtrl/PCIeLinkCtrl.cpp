@@ -81,11 +81,21 @@ int _tmain(int argc, _TCHAR* argv[])
     }
     else if (0 == _tcsicmp(_T("disable"), argv[2]))
     {
-        _tprintf(_T("Not Implemented Yet!  exit....\n"));
+        error = SetPCIeLinkDisable(segment, bus, dev, func, TRUE);
+        if (ERROR_SUCCESS != error)
+        {
+            _tprintf(_T("SetPCIeLinkDisable(TRUE) failed. LastError=%d\n"), error);
+            return -1;
+        }
     }
     else if (0 == _tcsicmp(_T("enable"), argv[2]))
     {
-        _tprintf(_T("Not Implemented Yet!  exit....\n"));
+        error = SetPCIeLinkDisable(segment, bus, dev, func, FALSE);
+        if (ERROR_SUCCESS != error)
+        {
+            _tprintf(_T("SetPCIeLinkDisable(FALSE) failed. LastError=%d\n"), error);
+            return -1;
+        }
     }
     else
     {

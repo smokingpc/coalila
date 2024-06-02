@@ -62,7 +62,7 @@ DWORD ReadMsixCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI
     error = SendIoctl(IOCTL_READ_CAP, &request, sizeof(READ_PCI_CAP), result, sizeof(PCI_MSI_CAP), ret_size);
     return error;
 }
-DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER* result)
+DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PPCIDEV_COMMON_CONFIG result)
 {
     READ_PCI_CFGHEADER request = 
     {
@@ -74,9 +74,10 @@ DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id
 
     DWORD error = 0;
     DWORD ret_size = 0;
-    error = SendIoctl(IOCTL_READ_PCIHEADER, &request, sizeof(READ_PCI_CFGHEADER), result, sizeof(PCIDEV_CFG_HEADER), ret_size);
+    error = SendIoctl(IOCTL_READ_PCIHEADER, &request, sizeof(READ_PCI_CFGHEADER), result, sizeof(PCIDEV_COMMON_CONFIG), ret_size);
     return error;
 }
+
 DWORD SetPCIeSlotAttentionIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state)
 {
     SET_PCIE_SLOT_CONTROL request = {
@@ -132,6 +133,22 @@ DWORD SetPCIeLinkRetrain(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_
         .Target = LINK_CTRL_FIELD::RETRAIN_LINK,
     };
     request.u.Retrain = TRUE;
+
+    DWORD error = 0;
+    DWORD ret_size = 0;
+    error = SendIoctl(IOCTL_PCIE_LINK_CTRL, &request, sizeof(SET_PCIE_LINK_CONTROL), NULL, 0, ret_size);
+    return error;
+}
+DWORD SetPCIeLinkDisable(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN disable)
+{
+    SET_PCIE_LINK_CONTROL request = {
+        .Segment = segment,
+        .BusId = bus_id,
+        .DevId = dev_id,
+        .FuncId = func_id,
+        .Target = LINK_CTRL_FIELD::LINK_DISABLE,
+    };
+    request.u.LinkDisable = disable;
 
     DWORD error = 0;
     DWORD ret_size = 0;

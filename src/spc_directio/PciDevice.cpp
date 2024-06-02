@@ -109,7 +109,7 @@ NTSTATUS ReadPciCfgHeader(
         return STATUS_ACPI_NOT_INITIALIZED;
     if (NULL == buffer || 
         (in_size < sizeof(READ_PCI_CFGHEADER)) ||
-        (out_size < sizeof(PCIDEV_CFG_HEADER)))
+        (out_size < sizeof(PCIDEV_COMMON_CONFIG)))
     {
         return STATUS_INVALID_PARAMETER;
     }
@@ -123,12 +123,12 @@ NTSTATUS ReadPciCfgHeader(
     if (NULL == seg_base)
         return STATUS_NOT_FOUND;
 
-    PCIDEV_CFG_HEADER* pcicfg = (PCIDEV_CFG_HEADER*)
+    PCIDEV_COMMON_CONFIG* pcicfg = (PCIDEV_COMMON_CONFIG*)
             GetPciCfgSpace(seg_base, bus_id, dev_id, func_id);
     if (NULL == pcicfg)
         return STATUS_NOT_FOUND;
 
-    ret_size = sizeof(PCIDEV_CFG_HEADER);
+    ret_size = sizeof(PCIDEV_COMMON_CONFIG);
     RtlCopyMemory(buffer, pcicfg, ret_size);
 
     return STATUS_SUCCESS;

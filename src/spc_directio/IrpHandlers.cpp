@@ -1,7 +1,11 @@
 #include "Precompile.h"
 
 //__inline void DefaultIoctlHandler(PIRP irp, PIO_STACK_LOCATION stack)
-__inline NTSTATUS DefaultIoctlHandler(PVOID buffer, ULONG in_size, ULONG out_size, ULONG& ret_size)
+__inline NTSTATUS DefaultIoctlHandler(
+    PVOID buffer, 
+    ULONG in_size, 
+    ULONG out_size, 
+    ULONG& ret_size)
 {
     UNREFERENCED_PARAMETER(buffer);
     UNREFERENCED_PARAMETER(in_size);
@@ -22,8 +26,7 @@ void InitIrpHandlers(_In_ PDRIVER_OBJECT driver)
 
 NTSTATUS DeviceIoControlHandler(
     IN PDEVICE_OBJECT DeviceObject,
-    IN PIRP Irp
-)
+    IN PIRP Irp)
 {
     PIO_STACK_LOCATION stack = NULL;
     NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
@@ -100,8 +103,7 @@ NTSTATUS DeviceIoControlHandler(
 
 NTSTATUS IrpDefaultHandler(
     IN PDEVICE_OBJECT DeviceObject,
-    IN PIRP Irp
-)
+    IN PIRP Irp)
 {
     UNREFERENCED_PARAMETER(DeviceObject);
     PIO_STACK_LOCATION stack = NULL;
@@ -123,8 +125,7 @@ NTSTATUS IrpDefaultHandler(
 
 NTSTATUS IrpCreateCloseHandler(
     IN PDEVICE_OBJECT DeviceObject,
-    IN PIRP Irp
-)
+    IN PIRP Irp)
 {
     UNREFERENCED_PARAMETER(DeviceObject);
     PIO_STACK_LOCATION stack = NULL;

@@ -59,10 +59,11 @@ GRAID_DLLEXPORT DWORD DirectIoWriteAddr(DIRECTIO_WRITE* request);
 GRAID_DLLEXPORT DWORD ReadPCIeCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIE_CAPABILITIES* result);
 GRAID_DLLEXPORT DWORD ReadMsiCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSI_CAP* result);
 GRAID_DLLEXPORT DWORD ReadMsixCap(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCI_MSIX_CAP* result);
-GRAID_DLLEXPORT DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PCIDEV_CFG_HEADER*result);
+GRAID_DLLEXPORT DWORD ReadPciCfgHeader(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, PPCIDEV_COMMON_CONFIG result);
 GRAID_DLLEXPORT DWORD SetPCIeSlotAttentionIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state);
 GRAID_DLLEXPORT DWORD SetPCIeSlotPowerIndicator(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, LED_STATE state);
 GRAID_DLLEXPORT DWORD SetPCIeSlotPowerControl(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN onoff);
 GRAID_DLLEXPORT DWORD SetPCIeLinkRetrain(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id);
+GRAID_DLLEXPORT DWORD SetPCIeLinkDisable(USHORT segment, UCHAR bus_id, UCHAR dev_id, UCHAR func_id, BOOLEAN disable);
 EXTERN_C_END
 
