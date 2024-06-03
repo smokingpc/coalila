@@ -11,6 +11,16 @@
 #define PCI_TYPE2_ADDRESSES             5
 #endif //PCI_TYPE2_ADDRESSES
 
+#ifndef MAX_PCI_BUSES
+#define MAX_PCI_BUSES 255
+#endif //MAX_PCI_BUSES
+#ifndef MAX_PCI_DEVICES
+#define MAX_PCI_DEVICES 32
+#endif //MAX_PCI_DEVICES
+#ifndef MAX_PCI_FUNCTIONS
+#define MAX_PCI_FUNCTIONS 7
+#endif //MAX_PCI_FUNCTIONS
+
 //PCI Capability ID => refer to PCI Local Bus spec 3.0
 enum class PCI_CAPID {
     RESERVED = 0,

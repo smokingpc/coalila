@@ -16,15 +16,37 @@ void Usage()
     _tprintf(_T("    List devices on segment 0 bus 7, type \"ListPCI.exe -addr=0.7\"\n"));
     _tprintf(_T("    Show detail of devices on segment 0 bus 13 device 1, type \"ListPCI.exe -detail -addr=0.13.1\"\n"));
 }
+
+void ScanFunction(
+    IN OUT list<PPCIDEV_INFO>& list,
+    IN USHORT segment,
+    IN UCHAR bus,
+    IN UCHAR dev,
+    IN UCHAR func)
+{
+    DWORD err = 0;
+    PPCIDEV_COMMON_CONFIG config = new PCIDEV_COMMON_CONFIG();
+    err = QueryPCI(config, segment, bus, dev, func);
+
+    if (ERROR_SUCCESS == err)
+    {
+        PPCIDEV_INFO info = new PCIDEV_INFO();
+        RtlZeroMemory(info, sizeof(PCIDEV_INFO));
+        UpdatePciDevInfo(info, config, segment, bus, dev, func);
+        list.push_back(info);
+    }
+    delete config;
+}
+
 void ScanDevice(
     IN OUT list<PPCIDEV_INFO>& list, 
     IN USHORT segment, 
     IN UCHAR bus, 
     IN UCHAR dev)
 {
-    for (UCHAR func = 0; func < 7; func++)
+    for (UCHAR func = 0; func < MAX_PCI_FUNCTIONS; func++)
     {
-//        QueryPCI(domain, bus, dev, func);
+        ScanFunction(list, segment, bus, dev, func);
     }
 }
 void ScanBus(
@@ -32,7 +54,7 @@ void ScanBus(
     IN USHORT segment, 
     IN UCHAR bus)
 {
-    for (UCHAR dev = 0; dev < 32; dev++)
+    for (UCHAR dev = 0; dev < MAX_PCI_DEVICES; dev++)
     {
         ScanDevice(list, segment, bus, dev);
     }
@@ -41,13 +63,11 @@ void ScanSegment(
     IN OUT list<PPCIDEV_INFO> &list, 
     IN USHORT segment)
 {
-    for (UCHAR bus = 0; bus < UCHAR_MAX; bus++)
+    for (UCHAR bus = 0; bus < MAX_PCI_BUSES; bus++)
     {
         ScanBus(list, segment, bus);
     }
 }
-
-
 
 void ParseSBDF(IN _TCHAR *str, IN OUT PCMD_ARGS cmd)
 {
@@ -128,12 +148,7 @@ void DoCommand(IN PCMD_ARGS cmd)
 
     if(cmd->UseSegId && cmd->UseBusId && cmd->UseDevId && cmd->UseFuncId)
     {
-        PPCIDEV_INFO query = new PCIDEV_INFO;
-        err = QueryPCI(&query->Config, segment, bus, dev, func);
-        if(ERROR_SUCCESS != err)
-            delete query;
-        else
-            list.push_back(query);
+        ScanFunction(list, segment, bus, dev, func);
     }
     else if (cmd->UseSegId && cmd->UseBusId && cmd->UseDevId)
     {
@@ -142,14 +157,22 @@ void DoCommand(IN PCMD_ARGS cmd)
     else if (cmd->UseSegId && cmd->UseBusId)
     {
         ScanBus(list, segment, bus);
+        //PrintBus(list);
     }
     else if (cmd->UseSegId)
     {
         ScanSegment(list, segment);
     }
 
-
-
+    PrintPciScanResult(list, cmd->ShowDetail);
+    
+    while(list.size() > 0)
+    {
+        //PPCIDEV_INFO item = list.front();
+        delete list.front();
+        list.pop_front();
+        //delete item;
+    }
 }
 
 int _tmain(int argc, _TCHAR* argv[])
