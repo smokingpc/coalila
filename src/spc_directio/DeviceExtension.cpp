@@ -84,7 +84,7 @@ NTSTATUS _MCFG_INFO::Setup()
     ULONG buf_size = 0;
     ULONG ret_size = 0;
     NTSTATUS status = AuxKlibGetSystemFirmwareTable(
-        FIRMWARE_ACPI, ACPI_SRAT_SIGNATURE,
+        FIRMWARE_ACPI, MCFG_TABLE_SIGNATURE,
         NULL, 0, &ret_size);
 
     if (STATUS_BUFFER_TOO_SMALL != status)
